@@ -1,0 +1,18 @@
+name: test-env
+dependencies:
+- python>=3.9,<3.10
+- numpy
+- pandas
+- tensorflow
+- librosa
+- scipy
+- fastapi
+- pip<24.1
+
+- pip:
+  - ddsp
+  - demucs
+  - soundfile
+  - boto3
+
+  

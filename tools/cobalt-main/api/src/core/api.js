@@ -194,6 +194,7 @@ export const runAPI = async (express, app, __dirname, isPrimary = true) => {
             const { status, body } = createResponse("error", {
                 code: "error.api.invalid_body",
             });
+            console.log(err);
             return res.status(status).json(body);
         }
 

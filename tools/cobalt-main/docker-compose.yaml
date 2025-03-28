@@ -1,7 +1,7 @@
 services:
     cobalt-api:
         image: ghcr.io/imputnet/cobalt:10
-
+        build: ./
         init: true
         read_only: true
         restart: unless-stopped
@@ -16,7 +16,7 @@ services:
         environment:
             # replace https://api.url.example/ with your instance's url
             # or else tunneling functionality won't work properly
-            API_URL: "https://localhost/"
+            API_URL: "http://localhost:9000"
 
             # if you want to use cookies for fetching data from services,
             # uncomment the next line & volumes section
