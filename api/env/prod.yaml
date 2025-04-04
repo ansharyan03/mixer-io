@@ -1,13 +1,17 @@
+# mamba env create -f prod.yaml
 name: splitter-env
 dependencies:
 - python>=3.9,<3.10
 - numpy<2.0
 - librosa
 - scipy
-- fastapi
+- fastapi[standard]
 - pip
 - IPython
 - pydub
+- pydantic
+- python-dotenv
+- httpx
 
 - pip:
   - dora-search

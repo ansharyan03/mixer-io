@@ -7,8 +7,13 @@ import soundfile as sf
 import pydub
 
 class AudioWrapper:
-    def __init__(self, path: str = "", data = None, sr = None):
-        data, sr = AudioWrapper.load_audio(path)
+    def __init__(self, path: str = "", data = None, sr = None, name: str = ''):
+        if len(path) > 0:
+            data, sr = AudioWrapper.load_audio(path)
+            self.name = path.split('/')[1].split('.')[0]
+        else:
+            self.name = name
+            data = np.transpose(data)
         self.data = data
         self.sr = sr
         self.buffer = np.copy(data)
@@ -21,11 +26,12 @@ class AudioWrapper:
     def split(self):
         separator = demucs.api.Separator()
         print('started separation')
-        # print(self.data)
+        print(self.data.shape)
+        # self.instrumental = self.data
+        # self.vocals = self.data
         origin, splits = separator.separate_tensor(torch.from_numpy(self.data), self.sr) # split with Demucs model
         self.instrumental = (splits["drums"] + splits["bass"] + splits["other"]).numpy()
         self.vocals = (splits["vocals"]).numpy()
-        
 
     def mix(self, other: 'AudioWrapper'):
         # find energy in each band of vocals and instrumental. apply filters/EQ/whatever
@@ -41,11 +47,15 @@ class AudioWrapper:
         print('finish loading')
         return data, sr
 
+    def write_stems(self):
+        if self.instrumental and self.vocals:
+            sf.write('out/' + self.name + '_vocals.wav', np.transpose(self.vocals), 44100)
+            sf.write('out/' + self.name + '_instrumental.wav', np.transpose(self.vocals), 44100)
 
-test = AudioWrapper(path='input/olympian.mp3')
-test.split()
-sf.write('out/vocals.wav', np.transpose(test.vocals), 44100)
-sf.write('out/instrumental.wav', np.transpose(test.instrumental), 44100)
+# test = AudioWrapper(path='input/olympian.mp3')
+# test.split()
+# sf.write('out/vocals.wav', np.transpose(test.vocals), 44100)
+# sf.write('out/instrumental.wav', np.transpose(test.instrumental), 44100)
 # print(type(vocals))
 # ipd.Audio(instrumental, rate=44100)
 # ipd.Audio(vocals, rate=44100)
