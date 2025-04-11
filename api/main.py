@@ -13,6 +13,7 @@ from matplotlib import pyplot as plt
 
 
 app = fastapi.FastAPI()
+headers = {"Content-Type": "application/json", "Accept":"application/json"}
 
 load_dotenv()
 
@@ -27,13 +28,13 @@ def merge_songs(song1: AudioWrapper, song2: AudioWrapper):
     else:
         song1.vocals = np.append(song1.vocals, np.zeros((2, song2.vocals.shape[1] - song1.vocals.shape[1])), axis=1)
         song1.instrumental = np.append(song1.instrumental, np.zeros((2, song2.instrumental.shape[1] - song1.instrumental.shape[1])), axis=1)
+async def process_song(song: str):
+    body = {"url": song, "downloadMode": "audio", "audioFormat": "wav"}
 
 @app.post("/")
 async def process_songs(songs: Songs):
     url = getenv('COBALT_URL')
-    async with httpx.AsyncClient() as client:
-        headers = {"Content-Type": "application/json", "Accept":"application/json"}
-        
+    async with httpx.AsyncClient() as client:        
         body1 = {"url": songs.url1, "downloadMode": "audio", "audioFormat": "wav"}
         body2 = {"url": songs.url2, "downloadMode": "audio", "audioFormat": "wav"}
         # print(body1, body2)
@@ -55,8 +56,13 @@ async def process_songs(songs: Songs):
         # print(song1)
         song1 = AudioWrapper(data=wave1, sr=sr1, name=song1['filename'])
         song2 = AudioWrapper(data=wave2, sr=sr2, name=song2['filename'])
+                
         song1.split()
         song2.split()
+        song1.analyze()
+        song2.analyze()
+        song2.stretch_to_other(song1)
+
         merge_songs(song1, song2)
         
         result = ((np.transpose((song1.instrumental/2) + (song2.vocals/2)))*32768.0).astype(np.int16)
