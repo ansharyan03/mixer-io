@@ -1,13 +1,21 @@
 "use client";
+import LoginButton from "@/components/LoginLogoutButton";
 import SongMashForm from "../../components/song_input";
 
 
 export default function Home() {
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 ">
-      <div className="mt-3 ml-5 font-mono text-white text-3xl">
+    <div className="flex flex-col h-screen ">
+      <div className="flex mt-3 justify-between">
+      <div className="ml-5 font-mono text-white text-3xl">
         SongMash
       </div>
+      <div className="mr-5">
+      <LoginButton/>
+
+      </div>
+      </div>
+
 
       <div className="flex-1 flex flex-col items-center text-white justify-center ">
         <h1 className="text-7xl mb-10 font-mono">Mash any two songs with one click.</h1>
