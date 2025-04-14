@@ -1,5 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import { Readable } from 'stream';
+
 
 interface TwoSongsResponse {
   link1: string;
@@ -40,6 +42,30 @@ export default function SongMashForm() {
     }
   }, [song2]);
 
+  
+  function streamToBuffer(stream: Readable): Promise<Buffer> {   
+    return new Promise((resolve, reject) => {
+      const chunks: Buffer[] = [];
+      stream.on('data', (chunk) => chunks.push(chunk));
+      stream.on('end', () => resolve(Buffer.concat(chunks)));
+      stream.on('error', reject);
+    });
+  }
+
+  async function arrayStreamToBuffer(stream: ReadableStream<Uint8Array>): Promise<Buffer> {
+    const reader = stream.getReader();
+    const chunks: Uint8Array[] = [];
+  
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value);
+    }
+  
+    return Buffer.concat(chunks.map(chunk => Buffer.from(chunk)));
+  }
+  
+
   // STEP 1: When Song 1 is submitted (using Enter)
   const handleSong1Submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -47,6 +73,7 @@ export default function SongMashForm() {
       setStep(2);
     }
   };
+
 
   // STEP 2: When Song 2 is submitted (using Enter) trigger secure API call
   const handleSong2Submit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -72,6 +99,7 @@ export default function SongMashForm() {
     }
   };
 
+
   // (Optional) Handle mash button action; left unchanged
   const handleMash = async () => {
     setError(null);
@@ -83,7 +111,16 @@ export default function SongMashForm() {
         body: JSON.stringify({ song1, song2 }),
       });
       const data: TwoSongsResponse = await response.json();
-      setResult(data);
+      const link1 = data.link1;
+      const link2 = data.link2;
+      const songMash = await fetch("https://localhost:8000/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({link1, link2}),
+      })
+      const mashWav = songMash.body;
+      const mashBuf = await arrayStreamToBuffer(mashWav);
+    setResult(data);
     } catch (err: any) {
       setError(err.message);
     } finally {
