@@ -1,67 +1,62 @@
 "use client";
 import React, { useRef, useState, useEffect } from "react";
-import { Card, IconButton, Box, Slider } from "@mui/material";
-import PauseRounded from "@mui/icons-material/PauseRounded";
+import WaveSurferPlayer from "@wavesurfer/react";
+import { IconButton, Box, Card } from "@mui/material";
 import PlayArrowRounded from "@mui/icons-material/PlayArrowRounded";
+import PauseRounded from "@mui/icons-material/PauseRounded";
 import RestartAltRounded from "@mui/icons-material/RestartAltRounded";
 
-export default function PlaybackWidget() {
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+type Props = {
+  audioBuffer: Uint8Array;
+};
+
+export default function WaveformPlayer({ audioBuffer }: Props) {
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const wavesurferRef = useRef<any>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration] = useState(120); 
 
-  // Simulate audio playing
+  // Convert buffer into blob URL
   useEffect(() => {
-    if (isPlaying) {
-      intervalRef.current = setInterval(() => {
-        setCurrentTime((prev) => {
-          if (prev >= duration) {
-            setIsPlaying(false);
-            clearInterval(intervalRef.current!);
-            return duration;
-          }
-          return prev + 1;
-        });
-      }, 1000);
-    } else {
-      clearInterval(intervalRef.current!);
+    if (!audioBuffer) return;
+    const blob = new Blob([audioBuffer], { type: "audio/wav" });
+    const url = URL.createObjectURL(blob);
+    setAudioUrl(url);
+
+    return () => URL.revokeObjectURL(url);
+  }, [audioBuffer]);
+
+  const togglePlay = () => {
+    if (wavesurferRef.current) {
+      wavesurferRef.current.playPause();
+      setIsPlaying((prev) => !prev);
     }
-
-    return () => clearInterval(intervalRef.current!);
-  }, [isPlaying]);
-
-  const handlePlayPause = () => {
-    setIsPlaying((prev) => !prev);
   };
 
   const handleRestart = () => {
-    setCurrentTime(0);
-    setIsPlaying(false);
-  };
-
-  const handleSliderChange = (_: Event, value: number | number[]) => {
-    const newTime = typeof value === "number" ? value : value[0];
-    setCurrentTime(newTime);
+    if (wavesurferRef.current) {
+      wavesurferRef.current.stop();
+      setIsPlaying(false);
+    }
   };
 
   return (
-    <Card sx={{ display: "flex", alignItems: "center", p: 2, width: 400 }}>
-      <Box sx={{ width: "100%" }}>
-        <Slider
-          size="small"
-          value={currentTime}
-          max={duration}
-          onChange={handleSliderChange}
+    <Card sx={{ p: 2, width: 600 }}>
+      {audioUrl && (
+        <WaveSurferPlayer
+          height={80}
+          waveColor="#d1d1d1"
+          progressColor="#3f51b5"
+          url={audioUrl}
+          onReady={(ws) => (wavesurferRef.current = ws)}
         />
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
-          <IconButton onClick={handleRestart}>
-            <RestartAltRounded />
-          </IconButton>
-          <IconButton onClick={handlePlayPause}>
-            {isPlaying ? <PauseRounded /> : <PlayArrowRounded />}
-          </IconButton>
-        </Box>
+      )}
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
+        <IconButton onClick={handleRestart}>
+          <RestartAltRounded />
+        </IconButton>
+        <IconButton onClick={togglePlay}>
+          {isPlaying ? <PauseRounded /> : <PlayArrowRounded />}
+        </IconButton>
       </Box>
     </Card>
   );
