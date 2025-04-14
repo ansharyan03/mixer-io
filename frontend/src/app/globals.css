@@ -1,3 +1,11 @@
 @import "tailwindcss";
 
-
+#waveform ::part(wrapper) {
+    opacity: 1 !important;
+  }
+  
+  #waveform {
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+  }

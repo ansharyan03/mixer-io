@@ -6,6 +6,7 @@ import PlayArrowRounded from "@mui/icons-material/PlayArrowRounded";
 import PauseRounded from "@mui/icons-material/PauseRounded";
 import RestartAltRounded from "@mui/icons-material/RestartAltRounded";
 
+
 type Props = {
   audioBuffer: Uint8Array;
 };
@@ -40,24 +41,37 @@ export default function WaveformPlayer({ audioBuffer }: Props) {
   };
 
   return (
-    <Card sx={{ p: 2, width: 600 }}>
-      {audioUrl && (
-        <WaveSurferPlayer
-          height={80}
-          waveColor="#d1d1d1"
-          progressColor="#3f51b5"
-          url={audioUrl}
-          onReady={(ws) => (wavesurferRef.current = ws)}
-        />
-      )}
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
-        <IconButton onClick={handleRestart}>
-          <RestartAltRounded />
-        </IconButton>
-        <IconButton onClick={togglePlay}>
-          {isPlaying ? <PauseRounded /> : <PlayArrowRounded />}
-        </IconButton>
-      </Box>
-    </Card>
+    <Card
+    sx={{
+      p: 2,
+      width: 600,
+      backgroundColor: "rgba(0, 0, 0, 0.3)",
+      border: "1px solid rgba(0, 255, 255, 0.3)",
+      boxShadow: "0 0 8px rgba(0, 255, 255, 0.2), 0 0 16px rgba(0, 255, 255, 0.1)",
+      backdropFilter: "blur(8px)",
+      borderRadius: 4,
+    }}
+>
+  <div id="waveform">
+    <WaveSurferPlayer
+      height={80}
+      waveColor="hotpink"
+      progressColor="turquoise"
+      cursorColor="#57BAB6"
+      url={audioUrl}
+      onReady={(ws) => (wavesurferRef.current = ws)}
+    />
+  </div>
+
+  <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
+    <IconButton onClick={handleRestart}>
+      <RestartAltRounded />
+    </IconButton>
+    <IconButton onClick={togglePlay}>
+      {isPlaying ? <PauseRounded /> : <PlayArrowRounded />}
+    </IconButton>
+  </Box>
+</Card>
+
   );
 }
