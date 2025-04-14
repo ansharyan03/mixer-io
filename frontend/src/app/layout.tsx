@@ -31,19 +31,28 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     };
   }, [supabase]);
 
-  // Tie the background based on both the route and the authentication state.
+  // Set background based on the route and authentication state.
   let backgroundClass = "";
   if (path === "/login") {
-    backgroundClass = "bg-gradient-to-r from-blue-500/80 via-purple-500/80 to-pink-500/80 backdrop-blur-md"; // Login route gets a white background.
+    backgroundClass = "bg-gradient-to-r from-pink-400/80 via-orange-400/80 to-orange-500/80 backdrop-blur-md";
   } else if (user) {
-    backgroundClass = "bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"; // Authenticated gradient.
+    backgroundClass = "bg-gradient-to-r from-pink-400 via-orange-400 to-orange-500";
   } else {
-    backgroundClass = "bg-gradient-to-r from-pink-300 via-orange-300 to-orange-400"; // Unauthenticated gradient.
+    backgroundClass = "bg-gradient-to-r from-pink-400 via-orange-300 to-orange-500";
   }
 
   return (
     <html lang="en">
-      <body className={`${backgroundClass} min-h-screen`}>
+      <head>
+        {/* Google Fonts */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Anton&family=Shrikhand&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className={`${backgroundClass} transition-colors duration-300 min-h-screen`}>
         {children}
       </body>
     </html>

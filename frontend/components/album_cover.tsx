@@ -1,5 +1,3 @@
-// components/album_cover.ts
-
 export async function getAccessToken(
   clientId: string,
   clientSecret: string
@@ -29,7 +27,7 @@ export async function getAlbumCover(
   song: string,
   clientId: string,
   clientSecret: string
-): Promise<string> {
+): Promise<{ cover: string; officialSong: string; artist: string }> {
   const token = await getAccessToken(clientId, clientSecret);
   const query = encodeURIComponent(song);
   const url = `https://api.spotify.com/v1/search?q=${query}&type=track&limit=1`;
@@ -47,9 +45,15 @@ export async function getAlbumCover(
   const data = await response.json();
   const items = data.tracks?.items;
   if (items && items.length > 0) {
-    const albumImages = items[0].album?.images;
+    const track = items[0];
+    const albumImages = track.album?.images;
     if (albumImages && albumImages.length > 0) {
-      return albumImages[0].url;
+      // Return the first image (index 0) as you did before.
+      return {
+        cover: albumImages[0].url,
+        officialSong: track.name,
+        artist: track.artists && track.artists.length > 0 ? track.artists[0].name : "Unknown Artist",
+      };
     }
   }
   throw new Error(`No album cover found for "${song}"`);

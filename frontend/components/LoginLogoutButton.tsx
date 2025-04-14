@@ -23,7 +23,7 @@ const LoginButton = () => {
   if (user) {
     return (
       <Button
-    className="px-8 py-3 bg-transparent text-white text-xl font-semibold rounded-full border border-2 border-white hover:bg-white hover:text-black transition-colors duration-200 shadow-lg"
+    className="px-8 py-3 bg-transparent text-white text-xl font-semibold rounded-full border border-2 border-white hover:bg-white hover:text-pink-600 transition-colors duration-200 shadow-lg"
         onClick={() => {
           signout();
           setUser(null);
@@ -36,7 +36,7 @@ const LoginButton = () => {
 
   return (
     <Button
-    className="px-8 py-3 bg-transparent text-white text-xl font-semibold rounded-full border border-2 border-white hover:bg-white hover:text-black transition-colors duration-200 shadow-lg"
+    className="px-8 py-3 bg-transparent text-white text-xl font-semibold rounded-full border border-2 border-white hover:bg-white hover:text-pink-600 transition-colors duration-200 shadow-lg"
     onClick={() => router.push("/login")}
   >
     Login
