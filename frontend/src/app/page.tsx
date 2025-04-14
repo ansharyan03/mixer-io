@@ -1,4 +1,5 @@
 "use client";
+import PlaybackWidget from "@/components/playback";
 import SongMashForm from "../../components/song_input";
 
 
@@ -15,8 +16,9 @@ export default function Home() {
 
         <div className="flex items-center justify-center gap-8">
           <SongMashForm />
-
-
+        </div>
+        <div className="flex items-center justify-center gap-8">
+          <PlaybackWidget/>
         </div>
       </div>
     </div>
