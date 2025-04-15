@@ -77,23 +77,34 @@ export default function SongMashForm() {
   };
 
   // Handle mash button action.
-  const handleMash = async () => {
-    setError(null);
-    setLoading(true);
-    try {
-      const response = await fetch("http://localhost:8000/search_two", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ song1, song2 }),
-      });
-      const data: TwoSongsResponse = await response.json();
-      setResult(data);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Handle mash button action.
+const handleMash = async () => {
+  setError(null);
+  setLoading(true);
+  try {
+    const response = await fetch("http://localhost:8000/search_two", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        song1: {
+          officialSong: songDetail1?.officialSong || "",
+          artist: songDetail1?.artist || ""
+        },
+        song2: {
+          officialSong: songDetail2?.officialSong || "",
+          artist: songDetail2?.artist || ""
+        },
+      }),
+    });
+    const data: TwoSongsResponse = await response.json();
+    setResult(data);
+  } catch (err: any) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="flex flex-col items-center px-4">

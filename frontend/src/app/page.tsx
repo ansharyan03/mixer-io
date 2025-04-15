@@ -21,7 +21,7 @@ export default function Home() {
       {/* Main Content */}
       <main className="flex-1 flex flex-col items-center justify-center text-white px-4">
         {/* Responsive Heading: 4xl on mobile, scaling to 7xl on medium+ screens */}
-        <h1 className="text-4xl sm:text-5xl md:text-7xl font-inter mb-10 font-bold font-anton drop-shadow-[0_10px_8px_rgba(0,0,0,0.3)] text-center">
+        <h1 className="text-4xl sm:text-5xl md:text-7xl font-inter mb-10 font-bold font-anton text-center">
           <UserGreetText /> Mix Any Two Songs!
         </h1>
 
