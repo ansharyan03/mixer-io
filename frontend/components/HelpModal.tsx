@@ -27,7 +27,9 @@ export default function HelpModal() {
               Dear Tangle Users,
               </p>
               <ul className="list-none">
-
+              <li className="relative pl-4 before:content-['–'] before:absolute before:left-0 before:top-0">
+    Song 1 is instrumentals and Song 2 is vocals
+  </li>
   <li className="relative pl-4 before:content-['–'] before:absolute before:left-0 before:top-0">
     Songs can take 3 to 5 minutes to process
   </li>
