@@ -81,12 +81,12 @@ class AudioWrapper:
         pass
 
     def timestretch(self, rate: float):
-        # self.data = lr.effects.time_stretch(self.data, rate=rate)
-        # self.instrumental = lr.effects.time_stretch(self.instrumental, rate=rate)
-        # self.vocals = lr.effects.time_stretch(self.vocals, rate=rate)
-        self.data = pyrb.time_stretch(y=self.data, sr=self.sr, rate=rate)
-        self.instrumental = pyrb.time_stretch(y=self.instrumental, sr=self.sr, rate=rate)
-        self.vocals = pyrb.time_stretch(y=self.vocals, sr=self.sr, rate=rate)
+        self.data = lr.effects.time_stretch(self.data, rate=rate)
+        self.instrumental = lr.effects.time_stretch(self.instrumental, rate=rate)
+        self.vocals = lr.effects.time_stretch(self.vocals, rate=rate)
+        # self.data = pyrb.time_stretch(y=np.transpose(self.data), sr=self.sr, rate=rate)
+        # self.instrumental = pyrb.time_stretch(y=np.transpose(self.instrumental), sr=self.sr, rate=rate)
+        # self.vocals = pyrb.time_stretch(y=np.transpose(self.vocals), sr=self.sr, rate=rate)
         self.beats /= rate
 
     def stretch_to_other(self, other: 'AudioWrapper'):
