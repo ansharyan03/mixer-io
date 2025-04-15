@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from serpapi import GoogleSearch
@@ -23,41 +23,54 @@ SERP_API_KEY = os.getenv("SERP_API_KEY")
 if not SERP_API_KEY:
     raise Exception("SERP_API_KEY must be set in the environment variables.")
 
+# Models for input validation
+class SongPayload(BaseModel):
+    officialSong: str
+    artist: str
+
+class SearchTwoPayload(BaseModel):
+    song1: SongPayload
+    song2: SongPayload
+
 class TwoSongsResponse(BaseModel):
     link1: str
     link2: str
 
 @app.post("/search_two", response_model=TwoSongsResponse)
-def search_two_songs(payload: dict):
-    song1 = payload.get("song1", "").strip()
-    song2 = payload.get("song2", "").strip()
-    if not song1 or not song2:
-        raise HTTPException(status_code=400, detail="Both song1 and song2 are required")
+def search_two_songs(payload: SearchTwoPayload):
+    # Extract and validate song details.
+    song1_title = payload.song1.officialSong.strip()
+    song1_artist = payload.song1.artist.strip()
+    song2_title = payload.song2.officialSong.strip()
+    song2_artist = payload.song2.artist.strip()
     
-    # Process song1
+    if not song1_title or not song1_artist or not song2_title or not song2_artist:
+        raise HTTPException(status_code=400, detail="Both song1 and song2 must include an officialSong and artist")
+    
+    # Process song1 using both the official song title and artist.
     params1 = {
         "engine": "youtube",
-        "search_query": f"{song1} song audio",
-        "api_key": SERP_API_KEY,  # Updated here
+        "search_query": f"{song1_title} {song1_artist} audio",
+        "api_key": SERP_API_KEY,
     }
     search1 = GoogleSearch(params1)
     results1 = search1.get_dict()
     video_results1 = results1.get("video_results")
     if not video_results1:
-        raise HTTPException(status_code=404, detail=f"No video results found for song1: {song1}")
+        raise HTTPException(status_code=404, detail=f"No video results found for song1: {song1_title} {song1_artist}")
     link1 = video_results1[0].get("link")
     
-    # Process song2
+    # Process song2 using both the official song title and artist.
     params2 = {
         "engine": "youtube",
-        "search_query": f"{song2} audio",
-        "api_key": SERP_API_KEY,  # Updated here
+        "search_query": f"{song2_title} {song2_artist} audio",
+        "api_key": SERP_API_KEY,
     }
     search2 = GoogleSearch(params2)
     results2 = search2.get_dict()
     video_results2 = results2.get("video_results")
     if not video_results2:
-        raise HTTPException(status_code=404, detail=f"No video results found for song2: {song2}")
+        raise HTTPException(status_code=404, detail=f"No video results found for song2: {song2_title} {song2_artist}")
     link2 = video_results2[0].get("link")
     
     return TwoSongsResponse(link1=link1, link2=link2)
