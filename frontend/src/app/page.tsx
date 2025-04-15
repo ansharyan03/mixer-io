@@ -8,7 +8,7 @@ export default function Home() {
     <div className="flex flex-col h-screen">
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-3">
-        <div className="text-white transform skew-x-[-10deg] text-3xl md:text-4xl">
+        <div className="text-white transform font-bold skew-x-[-10deg] text-3xl md:text-4xl">
           Tangle
         </div>
         <div className="flex items-center space-x-4">

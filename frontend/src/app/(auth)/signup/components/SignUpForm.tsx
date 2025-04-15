@@ -88,6 +88,9 @@ export function SignUpForm() {
             </Button>
           </div>
         </form>
+        <CardDescription className="text-md flex justify-center mt-2">
+            Look for a confirmation email        
+        </CardDescription>
         <div className="mt-6 text-center text-l">
           Already have an account?{" "}
           <Link href="/login" className="underline">

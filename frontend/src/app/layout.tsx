@@ -34,11 +34,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   // Set background based on the route and authentication state.
   let backgroundClass = "";
   if (path === "/login") {
-    backgroundClass = "bg-gradient-to-r from-pink-400/80 via-orange-400/80 to-orange-500/80 backdrop-blur-md";
+    backgroundClass = "bg-gradient-to-r from-pink-400 via-orange-400 to-orange-500 backdrop-blur-md";
   } else if (user) {
     backgroundClass = "bg-gradient-to-r from-pink-400 via-orange-400 to-orange-500";
   } else {
-    backgroundClass = "bg-gradient-to-r from-pink-400 via-orange-300 to-orange-500";
+    backgroundClass = "bg-gradient-to-r from-pink-400 via-orange-400 to-orange-500";
   }
 
   return (
@@ -48,7 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Anton&family=Shrikhand&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald&display=swap"
           rel="stylesheet"
         />
       </head>

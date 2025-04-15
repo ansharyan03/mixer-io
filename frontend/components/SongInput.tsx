@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import WaveformPlayer from "./AudioPlayer"; // Adjust the path if needed
+import WaveformPlayer from "./AudioPlayer"; // Adjust path if needed
 
 interface TwoSongsResponse {
   link1: string;
@@ -11,9 +11,7 @@ interface SongDetail {
   officialSong: string;
   artist: string;
 }
-interface SongMashFormProps{
-  setMashBuffer: (buffer:Uint8Array)=>void;
-}
+
 export default function SongMashForm() {
   const [song1, setSong1] = useState("");
   const [song2, setSong2] = useState("");
@@ -26,30 +24,18 @@ export default function SongMashForm() {
   const [mashSuccessful, setMashSuccessful] = useState(false);
   const [mashBuffer, setMashBuffer] = useState<Uint8Array | null>(null);
 
-  // Default width for auto-sizing inputs (in pixels)
-  const defaultWidth = 150;
-  // Refs for measuring text width
+  // Refs for measuring text width (invisible spans)
   const measureRef1 = useRef<HTMLSpanElement>(null);
   const measureRef2 = useRef<HTMLSpanElement>(null);
-  // State for dynamic widths
-  const [inputWidth1, setInputWidth1] = useState(defaultWidth);
-  const [inputWidth2, setInputWidth2] = useState(defaultWidth);
+  // Use one state value to store the max measured width
+  const [maxInputWidth, setMaxInputWidth] = useState(150);
 
-  // Auto-resize inputs based on content.
+  // Whenever either song changes, recalc the maximum width.
   useEffect(() => {
-    if (measureRef1.current) {
-      setInputWidth1(measureRef1.current.offsetWidth + 10);
-    }
-  }, [song1]);
-
-  useEffect(() => {
-    if (measureRef2.current) {
-      setInputWidth2(measureRef2.current.offsetWidth + 10);
-    }
-  }, [song2]);
-
-  // Helper function to read a ReadableStream into a Buffer.
-  
+    const width1 = measureRef1.current ? measureRef1.current.offsetWidth + 10 : 150;
+    const width2 = measureRef2.current ? measureRef2.current.offsetWidth + 10 : 150;
+    setMaxInputWidth(Math.max(width1, width2));
+  }, [song1, song2]);
 
   // Handle form submission: fetch album covers and song details.
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -82,16 +68,39 @@ export default function SongMashForm() {
     }
   };
 
+  // Helper function: converts a ReadableStream to a Uint8Array.
+  async function arrayStreamToUint8Array(
+    stream: ReadableStream<Uint8Array>
+  ): Promise<Uint8Array> {
+    const reader = stream.getReader();
+    const chunks: Uint8Array[] = [];
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (value) {
+        chunks.push(value);
+      }
+    }
+    const totalLength = chunks.reduce((acc, curr) => acc + curr.length, 0);
+    const result = new Uint8Array(totalLength);
+    let offset = 0;
+    for (const chunk of chunks) {
+      result.set(chunk, offset);
+      offset += chunk.length;
+    }
+    return result;
+  }
+
   // Handle mash button action.
-  // First posts to NEXT_PUBLIC_BACKEND_URL to get video links,
-  // then uses those links to post to Tangle API. The Tangle API returns a stream,
-  // which is read into a buffer (mashBuffer) and then passed to the WaveformPlayer.
+  // 1. Post to backend (NEXT_PUBLIC_BACKEND_URL) to get video links.
+  // 2. Then post those links to Tangle API (NEXT_PUBLIC_TANGLE_URL) to get a WAV stream.
+  // 3. Convert the stream into a Uint8Array and update state.
   const handleMash = async () => {
     setError(null);
     setLoading(true);
     setMashSuccessful(false);
     try {
-      // Step 1: Post to the backend to get video links.
+      // Step 1: Get video links from the backend.
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
       if (!backendUrl) {
         throw new Error("Backend URL not defined");
@@ -102,11 +111,11 @@ export default function SongMashForm() {
         body: JSON.stringify({
           song1: {
             officialSong: songDetail1?.officialSong || "",
-            artist: songDetail1?.artist || ""
+            artist: songDetail1?.artist || "",
           },
           song2: {
             officialSong: songDetail2?.officialSong || "",
-            artist: songDetail2?.artist || ""
+            artist: songDetail2?.artist || "",
           },
         }),
       });
@@ -131,17 +140,14 @@ export default function SongMashForm() {
       if (!tangleResponse.ok) {
         throw new Error("Failed to post links to Tangle API");
       }
-      // Here, we assume that tangleResponse.body is a ReadableStream returning .wav data.
-      if ("error" in tangleResponse.body){
-        throw new Error("Failure to obtain body");
+      if (!tangleResponse.body) {
+        throw new Error("No response body from Tangle API");
       }
-
-      const arrayBuffer=await tangleResponse.arrayBuffer();
-
-      const uint=new Uint8Array(arrayBuffer);
-
-      console.log(uint);
+      const arrayBuffer = await tangleResponse.arrayBuffer();
+      const uint = new Uint8Array(arrayBuffer);
+      console.log("Mash Buffer:", uint);
       setMashBuffer(uint);
+      setMashSuccessful(true);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -151,70 +157,69 @@ export default function SongMashForm() {
 
   return (
     <div className="flex flex-col items-center px-4">
-      {/* Responsive Form: Stack inputs on mobile, row on md+ */}
+      {/* Form Section: The inputs stack vertically on mobile and align side by side on desktop */}
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col md:flex-row items-center mt-6 gap-4 md:gap-20 w-full max-w-4xl"
+        className="flex flex-col items-center mt-6 gap-4 w-full max-w-4xl"
       >
-        {/* Song 1 input */}
-        <div className="relative flex-1">
-          <span
-            ref={measureRef1}
-            className="absolute text-gray-300 invisible whitespace-pre text-5xl"
-          >
-            {song1 || "Song 1"}
-          </span>
-          <input
-            type="text"
-            value={song1}
-            onChange={(e) => setSong1(e.target.value)}
-            placeholder="Song 1"
-            style={{ width: inputWidth1 }}
-            className={`w-full bg-transparent outline-none border-b-2 border-white text-5xl 
-                       focus:border-gray-300 text-center placeholder-gray-300 ${
-                         song1 ? "text-white" : "text-gray-300"
-                       }`}
-          />
+        {/* Input fields container */}
+        <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-20 w-full">
+          {/* Song 1 input */}
+          <div className="relative flex justify-center flex-1">
+            <span
+              ref={measureRef1}
+              className="absolute text-gray-300 invisible whitespace-pre text-5xl"
+            >
+              {song1 || "Song 1"}
+            </span>
+            <input
+              type="text"
+              value={song1}
+              onChange={(e) => setSong1(e.target.value)}
+              placeholder="Song 1"
+              style={{ width: maxInputWidth, maxWidth: "100%" }}
+              className={`w-full bg-transparent outline-none border-b-2 border-white text-5xl 
+                         focus:border-gray-300 text-center placeholder-gray-300 ${
+                           song1 ? "text-white" : "text-gray-300"
+                         }`}
+            />
+          </div>
+          {/* Song 2 input */}
+          <div className="relative flex justify-center flex-1">
+            <span
+              ref={measureRef2}
+              className="absolute text-gray-300 invisible whitespace-pre text-5xl"
+            >
+              {song2 || "Song 2"}
+            </span>
+            <input
+              type="text"
+              value={song2}
+              onChange={(e) => setSong2(e.target.value)}
+              placeholder="Song 2"
+              style={{ width: maxInputWidth, maxWidth: "100%" }}
+              className={`w-full bg-transparent outline-none border-b-2 border-white text-5xl 
+                         focus:border-gray-300 text-center placeholder-gray-300 ${
+                           song2 ? "text-white" : "text-gray-300"
+                         }`}
+            />
+          </div>
         </div>
-
-        {/* "View Song Details" button */}
+        {/* "View Song Details" button always appears below the inputs */}
         <button
           type="submit"
           className="px-6 py-2 border border-white text-2xl text-white rounded-full 
-                     transition-colors hover:bg-white hover:text-pink-500 mt-4 md:mt-0"
+                     transition-colors hover:bg-white hover:text-pink-500 mt-4"
         >
           View Song Details
         </button>
-
-        {/* Song 2 input */}
-        <div className="relative flex-1">
-          <span
-            ref={measureRef2}
-            className="absolute text-gray-300 invisible whitespace-pre text-5xl"
-          >
-            {song2 || "Song 2"}
-          </span>
-          <input
-            type="text"
-            value={song2}
-            onChange={(e) => setSong2(e.target.value)}
-            placeholder="Song 2"
-            style={{ width: inputWidth2 }}
-            className={`w-full bg-transparent outline-none border-b-2 border-white text-5xl 
-                       focus:border-gray-300 text-center placeholder-gray-300 ${
-                         song2 ? "text-white" : "text-gray-300"
-                       }`}
-          />
-        </div>
       </form>
 
-      {/* Album Covers & Mash Button Section (always side by side) */}
-      {/* ... (existing album covers layout) ... */}
-      {/* For brevity, this section is unchanged */}
+      {/* Album Covers & Mash Button Section */}
       {(cover1 || cover2) && (
         <div className="mt-10 mb-10 w-full max-w-4xl">
           <div className="flex flex-row items-center gap-4 md:gap-8 justify-center">
-            {/* Song 1 Album Cover Container */}
+            {/* Song 1 Album Cover */}
             <div className="relative inline-block text-center">
               <div className="relative w-32 sm:w-56 h-32 sm:h-56 bg-white shadow-lg rounded-xl overflow-hidden">
                 {cover1 ? (
@@ -238,7 +243,6 @@ export default function SongMashForm() {
                 )}
               </div>
             </div>
-
             {/* Mash Button */}
             <div className="flex items-center justify-center">
               <button
@@ -260,8 +264,7 @@ export default function SongMashForm() {
                 )}
               </button>
             </div>
-
-            {/* Song 2 Album Cover Container */}
+            {/* Song 2 Album Cover */}
             <div className="relative inline-block text-center">
               <div className="relative w-32 sm:w-56 h-32 sm:h-56 bg-white shadow-lg rounded-xl overflow-hidden">
                 {cover2 ? (
@@ -289,8 +292,8 @@ export default function SongMashForm() {
         </div>
       )}
 
-      {/* Display success message with WaveformPlayer if mash is successful */}
-      { mashBuffer && (
+      {/* Render the WaveformPlayer if a mash has been created */}
+      {mashSuccessful && mashBuffer && (
         <div className="mt-10 text-center">
           <WaveformPlayer audioBuffer={mashBuffer} />
         </div>
