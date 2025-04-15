@@ -33,6 +33,16 @@
 		// 	"version": "latest"
 		// },
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
+	},
+	"postCreateCommand": "cd frontend && npm install",
+	"forwardPorts": [3000],
+	"customizations": {
+	  "vscode": {
+		"extensions": [
+		  "dbaeumer.vscode-eslint",
+		  "esbenp.prettier-vscode"
+		]
+	  }
 	}
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
@@ -47,3 +57,5 @@
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
 }
+
+  
