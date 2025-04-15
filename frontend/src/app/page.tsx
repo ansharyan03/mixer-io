@@ -1,9 +1,8 @@
 "use client";
 import LoginButton from "@/components/LoginLogoutButton";
-import SongMashForm from "../../components/song_input";
+import SongMashForm from "../../components/SongInput";
 import UserGreetText from "@/components/UserGreetText";
 import HelpModal from "@/components/HelpModal";
-
 export default function Home() {
   return (
     <div className="flex flex-col h-screen">
@@ -29,6 +28,7 @@ export default function Home() {
         <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 w-full max-w-4xl">
           <SongMashForm />
         </div>
+        
       </main>
     </div>
   );

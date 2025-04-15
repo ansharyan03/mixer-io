@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import WaveformPlayer from "./AudioPlayer"; // Adjust the path if needed
 
 interface TwoSongsResponse {
   link1: string;
@@ -10,7 +11,9 @@ interface SongDetail {
   officialSong: string;
   artist: string;
 }
-
+interface SongMashFormProps{
+  setMashBuffer: (buffer:Uint8Array)=>void;
+}
 export default function SongMashForm() {
   const [song1, setSong1] = useState("");
   const [song2, setSong2] = useState("");
@@ -20,7 +23,8 @@ export default function SongMashForm() {
   const [songDetail2, setSongDetail2] = useState<SongDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<TwoSongsResponse | null>(null);
+  const [mashSuccessful, setMashSuccessful] = useState(false);
+  const [mashBuffer, setMashBuffer] = useState<Uint8Array | null>(null);
 
   // Default width for auto-sizing inputs (in pixels)
   const defaultWidth = 150;
@@ -44,6 +48,9 @@ export default function SongMashForm() {
     }
   }, [song2]);
 
+  // Helper function to read a ReadableStream into a Buffer.
+  
+
   // Handle form submission: fetch album covers and song details.
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -61,7 +68,6 @@ export default function SongMashForm() {
         const data = await response.json();
         setCover1(data.cover1);
         setCover2(data.cover2);
-        // These details will be shown if returned by your API.
         setSongDetail1({
           officialSong: data.officialSong1,
           artist: data.artist1,
@@ -77,38 +83,75 @@ export default function SongMashForm() {
   };
 
   // Handle mash button action.
-  // Handle mash button action.
-const handleMash = async () => {
-  setError(null);
-  setLoading(true);
-  try {
-    const response = await fetch("http://localhost:8000/search_two", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        song1: {
-          officialSong: songDetail1?.officialSong || "",
-          artist: songDetail1?.artist || ""
-        },
-        song2: {
-          officialSong: songDetail2?.officialSong || "",
-          artist: songDetail2?.artist || ""
-        },
-      }),
-    });
-    const data: TwoSongsResponse = await response.json();
-    setResult(data);
-  } catch (err: any) {
-    setError(err.message);
-  } finally {
-    setLoading(false);
-  }
-};
+  // First posts to NEXT_PUBLIC_BACKEND_URL to get video links,
+  // then uses those links to post to Tangle API. The Tangle API returns a stream,
+  // which is read into a buffer (mashBuffer) and then passed to the WaveformPlayer.
+  const handleMash = async () => {
+    setError(null);
+    setLoading(true);
+    setMashSuccessful(false);
+    try {
+      // Step 1: Post to the backend to get video links.
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+      if (!backendUrl) {
+        throw new Error("Backend URL not defined");
+      }
+      const backendResponse = await fetch(`${backendUrl}/search_two`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          song1: {
+            officialSong: songDetail1?.officialSong || "",
+            artist: songDetail1?.artist || ""
+          },
+          song2: {
+            officialSong: songDetail2?.officialSong || "",
+            artist: songDetail2?.artist || ""
+          },
+        }),
+      });
+      if (!backendResponse.ok) {
+        throw new Error("Failed to fetch video links from the backend");
+      }
+      const backendData: TwoSongsResponse = await backendResponse.json();
 
+      // Step 2: Post the links to Tangle API.
+      const tangleUrl = process.env.NEXT_PUBLIC_TANGLE_URL;
+      if (!tangleUrl) {
+        throw new Error("Tangle URL not defined");
+      }
+      const tangleResponse = await fetch(`${tangleUrl}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          url1: backendData.link1,
+          url2: backendData.link2,
+        }),
+      });
+      if (!tangleResponse.ok) {
+        throw new Error("Failed to post links to Tangle API");
+      }
+      // Here, we assume that tangleResponse.body is a ReadableStream returning .wav data.
+      if ("error" in tangleResponse.body){
+        throw new Error("Failure to obtain body");
+      }
+
+      const arrayBuffer=await tangleResponse.arrayBuffer();
+
+      const uint=new Uint8Array(arrayBuffer);
+
+      console.log(uint);
+      setMashBuffer(uint);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex flex-col items-center px-4">
-      {/* Responsive Form: column on mobile, row on md+ */}
+      {/* Responsive Form: Stack inputs on mobile, row on md+ */}
       <form
         onSubmit={handleSubmit}
         className="flex flex-col md:flex-row items-center mt-6 gap-4 md:gap-20 w-full max-w-4xl"
@@ -128,8 +171,9 @@ const handleMash = async () => {
             placeholder="Song 1"
             style={{ width: inputWidth1 }}
             className={`w-full bg-transparent outline-none border-b-2 border-white text-5xl 
-                       focus:border-gray-300 text-center placeholder-gray-300 
-                       ${song1 ? "text-white" : "text-gray-300"}`}
+                       focus:border-gray-300 text-center placeholder-gray-300 ${
+                         song1 ? "text-white" : "text-gray-300"
+                       }`}
           />
         </div>
 
@@ -137,7 +181,7 @@ const handleMash = async () => {
         <button
           type="submit"
           className="px-6 py-2 border border-white text-2xl text-white rounded-full 
-                     transition-colors hover:bg-white hover:text-pink-500"
+                     transition-colors hover:bg-white hover:text-pink-500 mt-4 md:mt-0"
         >
           View Song Details
         </button>
@@ -157,13 +201,16 @@ const handleMash = async () => {
             placeholder="Song 2"
             style={{ width: inputWidth2 }}
             className={`w-full bg-transparent outline-none border-b-2 border-white text-5xl 
-                       focus:border-gray-300 text-center placeholder-gray-300 
-                       ${song2 ? "text-white" : "text-gray-300"}`}
+                       focus:border-gray-300 text-center placeholder-gray-300 ${
+                         song2 ? "text-white" : "text-gray-300"
+                       }`}
           />
         </div>
       </form>
 
       {/* Album Covers & Mash Button Section (always side by side) */}
+      {/* ... (existing album covers layout) ... */}
+      {/* For brevity, this section is unchanged */}
       {(cover1 || cover2) && (
         <div className="mt-10 mb-10 w-full max-w-4xl">
           <div className="flex flex-row items-center gap-4 md:gap-8 justify-center">
@@ -192,25 +239,27 @@ const handleMash = async () => {
               </div>
             </div>
 
-            {/* Mash Button with Hover Effect */}
-            <button
-  onClick={handleMash}
-  className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full bg-white transition-all hover:shadow-xl hover:scale-105"
->
-  {loading ? (
-    <img
-      src="/vinyl.png"
-      alt="Vinyl"
-      className="w-full h-full animate-spin object-contain"
-    />
-  ) : (
-    <img
-      src="/shuffle.png"
-      alt="Shuffle"
-      className="w-6 h-6 object-contain"
-    />
-  )}
-</button>
+            {/* Mash Button */}
+            <div className="flex items-center justify-center">
+              <button
+                onClick={handleMash}
+                className="flex items-center justify-center w-12 md:w-16 h-12 md:h-16 rounded-full bg-white transition-all hover:shadow-xl hover:scale-105"
+              >
+                {loading ? (
+                  <img
+                    src="/vinyl.png"
+                    alt="Vinyl"
+                    className="w-full h-full animate-spin object-contain"
+                  />
+                ) : (
+                  <img
+                    src="/shuffle.png"
+                    alt="Shuffle"
+                    className="w-6 md:w-8 h-6 md:h-8 object-contain"
+                  />
+                )}
+              </button>
+            </div>
 
             {/* Song 2 Album Cover Container */}
             <div className="relative inline-block text-center">
@@ -240,33 +289,14 @@ const handleMash = async () => {
         </div>
       )}
 
-      {/* Display mash result links if available */}
-      {result && (
+      {/* Display success message with WaveformPlayer if mash is successful */}
+      { mashBuffer && (
         <div className="mt-10 text-center">
-          <p className="mb-2">
-            <a
-              href={result.link1}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-indigo-600 underline"
-            >
-              Song 1 Result
-            </a>
-          </p>
-          <p>
-            <a
-              href={result.link2}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-indigo-600 underline"
-            >
-              Song 2 Result
-            </a>
-          </p>
+          <WaveformPlayer audioBuffer={mashBuffer} />
         </div>
       )}
 
-      {/* Error message display */}
+      {/* Display error message if available */}
       {error && <p className="mt-4 text-red-500">{error}</p>}
     </div>
   );

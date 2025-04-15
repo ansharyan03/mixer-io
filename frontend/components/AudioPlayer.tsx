@@ -1,4 +1,4 @@
-"use client";
+mobile: "use client";
 import React, { useRef, useState, useEffect } from "react";
 import WaveSurferPlayer from "@wavesurfer/react";
 import { IconButton, Box, Card } from "@mui/material";
@@ -19,6 +19,10 @@ export default function WaveformPlayer({ audioBuffer }: Props) {
   // Convert buffer into blob URL
   useEffect(() => {
     if (!audioBuffer) return;
+    
+
+    
+    
     const blob = new Blob([audioBuffer], { type: "audio/wav" });
     const url = URL.createObjectURL(blob);
     setAudioUrl(url);

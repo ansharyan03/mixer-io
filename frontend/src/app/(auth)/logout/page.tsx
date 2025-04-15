@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import LoginButton from "@/components/LoginLogoutButton";
-import SongMashForm from "@/components/song_input";
+import SongMashForm from "@/components/SongInput";
 import HelpModal from "@/components/HelpModal";
 import UserGreetText from "@/components/UserGreetText";
 const LogoutPage =  () => {
