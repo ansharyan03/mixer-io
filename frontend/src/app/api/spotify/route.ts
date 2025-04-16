@@ -1,13 +1,10 @@
-// app/api/spotify/route.ts
 import { NextResponse } from "next/server";
 import { getAlbumCover } from "@/components/album_cover";
 
 export async function POST(request: Request) {
   try {
-    // Parse the incoming JSON
     const { song1, song2 } = await request.json();
 
-    // Validate inputs
     if (!song1 || !song2) {
       return NextResponse.json(
         { error: "Both song1 and song2 are required." },
@@ -15,7 +12,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Retrieve environment variables
     const client = process.env.SPOTIFY_CLIENT;
     const secret = process.env.SPOTIFY_SECRET;
     if (!client || !secret) {
@@ -25,11 +21,9 @@ export async function POST(request: Request) {
       );
     }
 
-    // Get album cover details for each song
     const album1 = await getAlbumCover(song1, client, secret);
     const album2 = await getAlbumCover(song2, client, secret);
 
-    // Return all details to the client
     return NextResponse.json({
       cover1: album1.cover,
       officialSong1: album1.officialSong,
@@ -38,10 +32,9 @@ export async function POST(request: Request) {
       officialSong2: album2.officialSong,
       artist2: album2.artist,
     });
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error.message || "Internal Server Error" },
-      { status: 500 }
-    );
+  } catch (error: unknown) {
+    const msg =
+      error instanceof Error ? error.message : "Internal Server Error";
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

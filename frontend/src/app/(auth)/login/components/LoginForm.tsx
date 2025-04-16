@@ -1,17 +1,16 @@
-import Link from "next/link"
-
-import { Button } from "@/components/ui/button"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { login } from "@/lib/auth-actions"
-import SignInWithGoogleButton from "./SignInWithGoogleButton"
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { login } from "@/lib/auth-actions";
+import SignInWithGoogleButton from "./SignInWithGoogleButton";
 
 export function LoginForm() {
   return (
@@ -26,7 +25,9 @@ export function LoginForm() {
         <form action="">
           <div className="grid gap-6">
             <div className="grid gap-3">
-              <Label htmlFor="email" className="text-xl">Email</Label>
+              <Label htmlFor="email" className="text-xl">
+                Email
+              </Label>
               <Input
                 id="email"
                 name="email"
@@ -37,7 +38,9 @@ export function LoginForm() {
               />
             </div>
             <div className="grid gap-3">
-              <Label htmlFor="password" className="text-xl">Password</Label>
+              <Label htmlFor="password" className="text-xl">
+                Password
+              </Label>
               <Input
                 id="password"
                 name="password"
@@ -57,12 +60,12 @@ export function LoginForm() {
           </div>
         </form>
         <div className="mt-6 text-center text-l">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link href="/signup" className="underline">
             Sign up
           </Link>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
