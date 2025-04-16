@@ -1,9 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
+import type { User } from "@supabase/supabase-js";
 
 const UserGreetText = () => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const supabase = createClient();
 
   useEffect(() => {
@@ -14,7 +15,7 @@ const UserGreetText = () => {
       setUser(user);
     };
     fetchUser();
-  }, []);
+  }, [supabase]);
 
   if (!user) return null;
 
@@ -27,7 +28,7 @@ const UserGreetText = () => {
 
   return (
     <span className="inline-block">
-      <strong>{capitalize(firstName)},{' '}</strong>
+      <strong>{capitalize(firstName)}, </strong>
     </span>
   );
 };
