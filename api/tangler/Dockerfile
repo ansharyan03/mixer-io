@@ -9,11 +9,12 @@ ADD utils .
 
 WORKDIR /app
 COPY *.* .
+USER root
 RUN apt update && apt install -y git && \
-    apt clean && rm -rf /var/lib/apt/lists/*
-
+    apt clean
 RUN micromamba env create -f env/prod.yaml -y
 RUN micromamba run -n splitter-env pip install -U git+https://github.com/CarlGao4/demucs.git@4.1.0-update
+USER 1001
 
 EXPOSE 5000
 

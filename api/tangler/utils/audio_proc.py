@@ -20,7 +20,8 @@ class AudioWrapper:
             self.name = name
             data = np.transpose(data)
         self.data = data
-        end = lr.time_to_samples(240, sr=sr)
+        max_min = 3.0
+        end = lr.time_to_samples(max_min * 60, sr=sr)
         self.data = self.data[:, :end]
         print("shape: " + str(self.data.shape))
         self.sr = sr
