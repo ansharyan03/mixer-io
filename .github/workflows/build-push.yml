@@ -36,16 +36,6 @@ jobs:
         aws-region: ${{ secrets.AWS_REGION }}
         aws-access-key-id: ${{ secrets.ACC_KE }}
         aws-secret-access-key : ${{ secrets.SEC_KE }}
-    - name: Configure env variables for frontend
-      run: |
-        echo "::add-mask::${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}"
-        echo "::add-mask::${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
-        echo "::add-mask::${{ secrets.SPOTIFY_CLIENT }}"
-        echo "::add-mask::${{ secrets.SPOTIFY_SECRET }}"
-        echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}" >> $GITHUB_ENV
-        echo "NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}" >> $GITHUB_ENV
-        echo "SPOTIFY_CLIENT=${{ secrets.SPOTIFY_CLIENT }}" >> $GITHUB_ENV
-        echo "SPOTIFY_SECRET=${{ secrets.SPOTIFY_SECRET }}" >> $GITHUB_ENV
     - name: Docker login with AWS credentials
       run:
         aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
@@ -54,6 +44,10 @@ jobs:
         docker buildx build \
           --platform linux/amd64 \
           --push \
+          --build-arg NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
+          --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }} \
+          --build-arg SPOTIFY_CLIENT=${{ secrets.SPOTIFY_CLIENT }} \
+          --build-arg SPOTIFY_SECRET=${{ secrets.SPOTIFY_SECRET }} \
           --tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/tangle/web:latest \
           frontend -f frontend/Dockerfile
     - name: Build and push youtube search api image
