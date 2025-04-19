@@ -1,5 +1,5 @@
 .pnpm-store
 **/__pycache__
 **/__pycache__/*.pyc
-**/*.env*
+**/.env.local
 id_rsa*
