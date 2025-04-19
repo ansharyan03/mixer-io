@@ -86,19 +86,5 @@ jobs:
           --service tangler \
           --force-new-deployment \
           --region ${{ secrets.AWS_REGION }}
-    - name: logout
-      run: |
-        aws ecr logout --region ${{ secrets.AWS_REGION }} --registry-ids ${{ secrets.AWS_ACCOUNT_ID }}
-    - name: Clear Docker cache
-      run: |
-        docker builder prune --all --force
-        docker system prune --all --force
-        docker volume prune --force
-        docker network prune --force
-    - name: Logout from AWS
-      run: |
-        aws ecr logout --region ${{ secrets.AWS_REGION }} --registry-ids ${{ secrets.AWS_ACCOUNT_ID }}
-    - name: Logout from Docker
-      run: |
-        docker logout
+
     
