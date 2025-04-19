@@ -48,6 +48,8 @@ jobs:
           --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }} \
           --build-arg SPOTIFY_CLIENT=${{ secrets.SPOTIFY_CLIENT }} \
           --build-arg SPOTIFY_SECRET=${{ secrets.SPOTIFY_SECRET }} \
+          --build-arg NEXT_PUBLIC_BACKEND_URL=http://ytsearchapi.tanglespace:8000 \
+          --build-arg NEXT_PUBLIC_TANGLER_URL=http://tangler.tanglespace:5000 \
           --tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/tangle/web:latest \
           frontend -f frontend/Dockerfile
     - name: Build and push youtube search api image
@@ -63,6 +65,7 @@ jobs:
           --platform linux/amd64 \
           --push \
           --tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/tangle/tangler:latest \
+          --build-arg COBALT_URL=http://cobaltapi.tanglerspace:9000 \
           api/tangler -f api/tangler/Dockerfile
     
     - name: Force new web deployment

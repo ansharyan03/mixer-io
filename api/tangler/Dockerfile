@@ -1,6 +1,8 @@
 FROM mambaorg/micromamba:ubuntu22.04
 WORKDIR /app
 
+ARG COBALT_API
+ENV COBALT_API=$COBALT_API
 WORKDIR /app/env
 ADD env .
 
