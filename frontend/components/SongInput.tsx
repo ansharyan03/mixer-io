@@ -79,7 +79,7 @@ export default function SongMashForm() {
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
       if (!backendUrl) throw new Error("Backend URL not defined");
       
-      const backendResponse = await fetch('/api/tangler', {
+      const backendResponse = await fetch('/api/ytsearch', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
