@@ -63,6 +63,7 @@ export default function SongMashForm() {
           officialSong: data.officialSong2,
           artist: data.artist2,
         });
+        console.log("Song details: ", data.officialSong1, data.artist1, "\nSong details 2: ", data.officialSong2, data.artist2 );
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err);
         setError(msg);

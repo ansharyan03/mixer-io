@@ -15,8 +15,8 @@ export async function POST(request: Request) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          url1,
-          url2
+          url1: url1,
+          url2: url2
         })
     });
     if (!response.ok)
