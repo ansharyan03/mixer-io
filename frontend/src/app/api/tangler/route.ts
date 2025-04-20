@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 export async function POST(request: Request) {
   try {
     const { url1, url2 } = await request.json();
-    
+    console.log("Received URLs:", url1, url2);
     if (!url1 || !url2) {
       return NextResponse.json(
         { error: "Both url1 and url2 are required." },

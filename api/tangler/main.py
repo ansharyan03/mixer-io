@@ -56,6 +56,7 @@ async def read_song(song: str, client: httpx.AsyncClient, api_url: str) -> Union
     Returns AudioWrapper object
     """
     body = {"url": song, "downloadMode": "audio", "audioFormat": "wav"}
+    print(api_url)
     tunnel = await client.post(api_url, json=body, headers=headers)
     song = tunnel.json()
     
