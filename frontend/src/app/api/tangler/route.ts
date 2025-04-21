@@ -21,8 +21,8 @@ export async function POST(request: Request) {
     });
     if (!response.ok)
         throw new Error("Failed to post links to Tangle API");
-    if (!response.body)
-        throw new Error("No response body from Tangle API");
+    // if (!response.body)
+        // throw new Error("No response body from Tangle API");
     
     const arrayBuffer = await response.arrayBuffer();
     const uint = new Uint8Array(arrayBuffer);

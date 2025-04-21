@@ -106,8 +106,8 @@ export default function SongMashForm() {
           url2: backendData.link2,
         }),
       });      
-      if (!tangleResponse.ok)
-        throw new Error("Failed to fetch mashup from Tangle API");
+      // if (!tangleResponse.ok)
+        // throw new Error("Failed to fetch mashup from Tangle API");
       const tangleBuffer = await tangleResponse.json();
       setMashBuffer(tangleBuffer.uint);
       setMashSuccessful(true);
