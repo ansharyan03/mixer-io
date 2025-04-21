@@ -23,7 +23,7 @@ export async function POST(request: Request) {
         throw new Error("Failed to post links to Tangle API");
     if (!response.body)
         throw new Error("No response body from Tangle API");
-
+    
     const arrayBuffer = await response.arrayBuffer();
     const uint = new Uint8Array(arrayBuffer);
     console.log("Mash Buffer:", uint);
@@ -31,6 +31,7 @@ export async function POST(request: Request) {
         uint: uint
     });
   } catch (error: unknown) {
+    console.log((await request.json()));
     const msg =
       error instanceof Error ? error.message : "Internal Server Error";
     return NextResponse.json({ error: msg }, { status: 500 });
