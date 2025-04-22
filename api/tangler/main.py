@@ -29,9 +29,9 @@ app.add_middleware(
 )
 
 load_dotenv()
-api_key = getenv('API_KEY')
 
-headers = {"Content-Type": "application/json", "Accept":"application/json", "Authorization": "Api-Key " + api_key}
+
+
 
 class Songs(BaseModel):
     url1: str
@@ -57,6 +57,7 @@ async def read_song(song: str, client: httpx.AsyncClient, api_url: str) -> Union
 
     Returns AudioWrapper object
     """
+    headers = {"Content-Type": "application/json", "Accept":"application/json", "Authorization": "Api-Key " + getenv('API_KEY')}
     body = {"url": song, "downloadMode": "audio", "audioFormat": "wav"}
     print(api_url)
     tunnel = await client.post(api_url, json=body, headers=headers)
