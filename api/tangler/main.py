@@ -27,9 +27,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-headers = {"Content-Type": "application/json", "Accept":"application/json"}
 
 load_dotenv()
+api_key = getenv('API_KEY')
+
+headers = {"Content-Type": "application/json", "Accept":"application/json", "Authorization": "Api-Key " + api_key}
 
 class Songs(BaseModel):
     url1: str
