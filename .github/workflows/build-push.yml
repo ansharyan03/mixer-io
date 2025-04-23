@@ -75,13 +75,6 @@ jobs:
           --service tangleweb \
           --force-new-deployment \
           --region ${{ secrets.AWS_REGION }}
-    - name: Force new youtube search deployment
-      run: |
-        aws ecs update-service \
-          --cluster tangle-cluster \
-          --service ytsearch \
-          --force-new-deployment \
-          --region ${{ secrets.AWS_REGION }}
     - name: Force new tangler deployment
       run: |
         aws ecs update-service \
