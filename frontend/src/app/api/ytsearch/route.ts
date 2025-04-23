@@ -35,7 +35,7 @@ export async function POST(request: Request) {
         link2: responseData.link2
     });
   } catch (error: unknown) {
-    console.log((await request.json()));
+    console.log(request);
     const msg =
       error instanceof Error ? error.message : "Internal Server Error";
     return NextResponse.json({ error: msg }, { status: 500 });
