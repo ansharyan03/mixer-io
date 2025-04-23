@@ -65,7 +65,7 @@ jobs:
           --platform linux/amd64 \
           --push \
           --tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/tangle/tangler:latest \
-          --build-arg COBALT_URL=http://cobaltapi.tanglerspace:9000 \
+          --build-arg COBALT_URL=http://cobalt.tanglerspace:9000 \
           api/tangler -f api/tangler/Dockerfile
     
     - name: Force new web deployment
