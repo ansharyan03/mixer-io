@@ -93,8 +93,10 @@ export default function SongMashForm() {
           },
         }),
       });
-      const backendData: TwoSongsResponse = await backendResponse.json();
-      
+      // if (!backendResponse.ok)
+        // throw new Error("Failed to fetch video links from the backend");
+      const backendData = await backendResponse.json();
+      console.log("Backend data: ", backendData)
 
       const tangleResponse = await fetch('/api/tangler', {
         method: "POST",
