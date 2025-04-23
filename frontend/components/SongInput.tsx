@@ -2,10 +2,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import WaveformPlayer from "./AudioPlayer";
 
-interface TwoSongsResponse {
-  link1: string;
-  link2: string;
-}
+// interface TwoSongsResponse {
+//   link1: string;
+//   link2: string;
+// }
 
 interface SongDetail {
   officialSong: string;
