@@ -78,7 +78,7 @@ export default function SongMashForm() {
     try {
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
       if (!backendUrl) throw new Error("Backend URL not defined");
-      
+      console.log("Backend URL: ", `${backendUrl}/search_two`);
       const backendResponse = await fetch('/api/ytsearch', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -93,8 +93,6 @@ export default function SongMashForm() {
           },
         }),
       });
-      if (!backendResponse.ok)
-        throw new Error("Failed to fetch video links from the backend");
       const backendData: TwoSongsResponse = await backendResponse.json();
       
 
