@@ -48,8 +48,8 @@ jobs:
           --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }} \
           --build-arg SPOTIFY_CLIENT=${{ secrets.SPOTIFY_CLIENT }} \
           --build-arg SPOTIFY_SECRET=${{ secrets.SPOTIFY_SECRET }} \
-          --build-arg NEXT_PUBLIC_BACKEND_URL=http://tangler.tanglespace:8000 \
-          --build-arg NEXT_PUBLIC_TANGLER_URL=http://tangler.tanglespace:5000 \
+          --build-arg NEXT_PUBLIC_BACKEND_URL=http://ytsearchbalancer-1877298854.us-east-1.elb.amazonaws.com:8000 \
+          --build-arg NEXT_PUBLIC_TANGLER_URL=http://tangleapibalancer-624375117.us-east-1.elb.amazonaws.com:5000 \
           --tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/tangle/web:latest \
           frontend -f frontend/Dockerfile
     - name: Build and push youtube search api image
