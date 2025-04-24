@@ -79,7 +79,7 @@ jobs:
       run: |
         aws ecs update-service \
           --cluster tangle-cluster \
-          --service tangler \
+          --service tangle-api \
           --force-new-deployment \
           --region ${{ secrets.AWS_REGION }}
 
