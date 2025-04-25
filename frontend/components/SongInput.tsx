@@ -79,7 +79,7 @@ export default function SongMashForm() {
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
       if (!backendUrl) throw new Error("Backend URL not defined");
       console.log("Backend URL: ", `${backendUrl}/search_two`);
-      const backendResponse = await fetch(`${backendUrl}/search_two`, {
+      const backendResponse = await fetch('/api/ytsearch', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -97,8 +97,8 @@ export default function SongMashForm() {
         // throw new Error("Failed to fetch video links from the backend");
       const backendData = await backendResponse.json();
       console.log("Backend data: ", backendData)
-      const tangleUrl = process.env.NEXT_PUBLIC_TANGLE_URL;
-      const tangleResponse = await fetch(`${tangleUrl}`, {
+
+      const tangleResponse = await fetch('/api/tangler', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -108,9 +108,8 @@ export default function SongMashForm() {
       });      
       // if (!tangleResponse.ok)
         // throw new Error("Failed to fetch mashup from Tangle API");
-      const arrayBuffer = await tangleResponse.arrayBuffer();
-      const uint = new Uint8Array(arrayBuffer);
-      setMashBuffer(uint);
+      const tangleBuffer = await tangleResponse.json();
+      setMashBuffer(tangleBuffer.uint);
       setMashSuccessful(true);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
