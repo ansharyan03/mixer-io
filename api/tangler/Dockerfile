@@ -16,7 +16,7 @@ RUN apt update && apt install -y git && \
     apt clean
 RUN micromamba env create -f env/prod.yaml -y
 RUN micromamba run -n splitter-env pip install -U git+https://github.com/CarlGao4/demucs.git@4.1.0-update
-# RUN micromamba clean --all -y
+RUN micromamba clean --all -y
 USER 1001
 # COPY env/*.th /home/mambauser/.cache/torch/hub/checkpoints
 
