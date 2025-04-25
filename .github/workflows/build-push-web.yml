@@ -52,22 +52,7 @@ jobs:
           --build-arg NEXT_PUBLIC_TANGLER_URL=http://tangler.tanglespace:5000 \
           --tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/tangle/web:latest \
           frontend -f frontend/Dockerfile
-    - name: Build and push youtube search api image
-      run: |
-        docker buildx build \
-          --platform linux/amd64 \
-          --push \
-          --tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/tangle/youtube-search:latest \
-          api/youtube_search -f api/youtube_search/Dockerfile
-    - name: Build and push tangler api image
-      run: |
-        docker buildx build \
-          --platform linux/amd64 \
-          --push \
-          --tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/tangle/tangler:latest \
-          --build-arg COBALT_URL=http://cobalt.tanglerspace:9000 \
-          api/tangler -f api/tangler/Dockerfile
-    
+
     - name: Force new web deployment
       run: |
         aws ecs update-service \
@@ -75,12 +60,3 @@ jobs:
           --service tangleweb \
           --force-new-deployment \
           --region ${{ secrets.AWS_REGION }}
-    - name: Force new tangler deployment
-      run: |
-        aws ecs update-service \
-          --cluster tangle-cluster \
-          --service tangle-api \
-          --force-new-deployment \
-          --region ${{ secrets.AWS_REGION }}
-
-    
