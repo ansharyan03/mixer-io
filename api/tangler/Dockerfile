@@ -1,8 +1,6 @@
 FROM mambaorg/micromamba:ubuntu22.04
 WORKDIR /app
 
-ARG INVIDIOUS_URL
-ENV INVIDIOUS_URL=$INVIDIOUS_URL
 WORKDIR /app/env
 ADD env .
 
