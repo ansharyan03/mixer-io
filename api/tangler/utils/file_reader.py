@@ -58,7 +58,7 @@ def get_adaptive_formats(data):
             data_obj = format
             return data_obj
 
-def read_tunnel(url: str):
+def read_tunnel(url: str, api_url: str):
     # separate into:
     # get video ID from URL
     # form request body with API key
@@ -68,7 +68,7 @@ def read_tunnel(url: str):
 
     headers = {"Content-Type": "application/json", "Authorization": "Bearer " + os.getenv('API_KEY')}
     body = {"videoId": video_id}
-    response = requests.post(url=url, json=body, headers=headers, timeout=None)
+    response = requests.post(url=api_url, json=body, headers=headers, timeout=None)
     response.raise_for_status()
     # test = response.content
     # print(test)

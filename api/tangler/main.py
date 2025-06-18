@@ -55,7 +55,7 @@ async def read_song(song: str, client: httpx.AsyncClient, api_url: str) -> Union
     Returns AudioWrapper object
     """
     try:
-        wave, sr = read_tunnel(song)
+        wave, sr = read_tunnel(song, api_url)
         result = AudioWrapper(data=wave, sr=sr, name=song['filename'])
         return result
     except:
