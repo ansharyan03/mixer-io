@@ -72,5 +72,6 @@ def search_two_songs(payload: SearchTwoPayload):
     if not video_results2:
         raise HTTPException(status_code=404, detail=f"No video results found for song2: {song2_title} {song2_artist}")
     link2 = video_results2[0].get("link")
-    
+    link1 = link1.split("v=")[-1]
+    link2 = link2.split("v=")[-1]
     return TwoSongsResponse(link1=link1, link2=link2)

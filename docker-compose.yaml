@@ -1,0 +1,19 @@
+version: "3"
+services:
+  tangler:
+    image: 914809851189.dkr.ecr.us-east-1.amazonaws.com/tangle/tangler:latest
+    ports:
+      - 5000:5000
+    restart: unless-stopped
+  
+  youtube-search:
+    image: 914809851189.dkr.ecr.us-east-1.amazonaws.com/tangle/youtube-search:latest
+    ports:
+      - 8000:8000
+    restart: unless-stopped
+  
+  web:
+    image: 914809851189.dkr.ecr.us-east-1.amazonaws.com/tangle/web:latest
+    ports:
+      - 80:80
+    restart: unless-stopped

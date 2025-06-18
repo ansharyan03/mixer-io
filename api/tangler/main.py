@@ -30,9 +30,6 @@ app.add_middleware(
 
 load_dotenv()
 
-
-
-
 class Songs(BaseModel):
     url1: str
     url2: str
@@ -57,24 +54,12 @@ async def read_song(song: str, client: httpx.AsyncClient, api_url: str) -> Union
 
     Returns AudioWrapper object
     """
-    headers = {"Content-Type": "application/json", "Accept":"application/json", "Authorization": "Api-Key " + getenv('API_KEY')}
-    body = {"url": song, "downloadMode": "audio", "audioFormat": "wav"}
-    print(api_url)
-    tunnel = await client.post(api_url, json=body, headers=headers, timeout=None)
-    song = tunnel.json()
-    
-    wave = None
-    sr = None
-    if song['status'] == 'tunnel':
-        try:
-            wave, sr = read_tunnel(song['url'], 'WAV')
-        except:
-            return None
-    else:
-        print(song)
+    try:
+        wave, sr = read_tunnel(song)
+        result = AudioWrapper(data=wave, sr=sr, name=song['filename'])
+        return result
+    except:
         return None
-    result = AudioWrapper(data=wave, sr=sr, name=song['filename'])
-    return result
 
 async def process_song(song: AudioWrapper):
     song.split()
@@ -83,7 +68,7 @@ async def process_song(song: AudioWrapper):
     
 @app.post("/")
 async def process_songs(songs: Songs):
-    url = getenv('COBALT_URL')
+    url = getenv('INVIDIOUS_URL')
     async with httpx.AsyncClient() as client:
         song1 = asyncio.create_task(read_song(songs.url1, client, url))
         song2 = asyncio.create_task(read_song(songs.url2, client, url))

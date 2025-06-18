@@ -1,8 +1,8 @@
 FROM mambaorg/micromamba:ubuntu22.04
 WORKDIR /app
 
-ARG COBALT_API
-ENV COBALT_API=$COBALT_API
+ARG INVIDIOUS_URL
+ENV INVIDIOUS_URL=$INVIDIOUS_URL
 WORKDIR /app/env
 ADD env .
 
@@ -14,7 +14,7 @@ COPY *.* .
 USER root
 RUN apt update && apt install -y git && \
     apt clean
-RUN micromamba env create -f env/prod.yaml -y
+RUN CONDA_SUBDIR=osx-64 micromamba env create -f env/prod.yaml -y
 RUN micromamba run -n splitter-env pip install -U git+https://github.com/CarlGao4/demucs.git@4.1.0-update
 RUN micromamba clean --all -y
 USER 1001
