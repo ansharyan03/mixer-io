@@ -12,7 +12,7 @@ COPY *.* .
 USER root
 RUN apt update && apt install -y git && \
     apt clean
-RUN CONDA_SUBDIR=osx-64 micromamba env create -f env/prod.yaml -y
+RUN micromamba env create -f env/prod.yaml -y
 RUN micromamba run -n splitter-env pip install -U git+https://github.com/CarlGao4/demucs.git@4.1.0-update
 RUN micromamba clean --all -y
 USER 1001
