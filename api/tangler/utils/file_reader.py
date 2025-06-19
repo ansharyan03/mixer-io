@@ -2,6 +2,7 @@ import requests
 from pydub import AudioSegment
 import numpy as np
 import io
+import urllib.parse
 
 def download_range(url, start, end):
     headers = {'Range': f'bytes={start}-{end}'}
@@ -58,15 +59,21 @@ def get_adaptive_formats(data):
             data_obj = format
             return data_obj
 
-def read_tunnel(url: str, api_url: str):
+def read_tunnel(url: str, api_url: str, API_KEY: str):
     # separate into:
     # get video ID from URL
     # form request body with API key
     # post to API
     # response handling
-    video_id = url.split('v=')[-1]
+    parsed_url = urllib.parse.urlparse(url)
+    query_params = urllib.parse.parse_qs(parsed_url.query)
+    video_id = query_params.get('v', [None])[0]
+    if not video_id:
+        raise ValueError("Invalid YouTube URL: Missing video ID")
+    print(f"Video ID: {video_id}")
 
-    headers = {"Content-Type": "application/json", "Authorization": "Bearer " + os.getenv('API_KEY')}
+    # form request
+    headers = {"Content-Type": "application/json", "Authorization": "Bearer " + API_KEY}
     body = {"videoId": video_id}
     response = requests.post(url=api_url, json=body, headers=headers, timeout=None)
     response.raise_for_status()
