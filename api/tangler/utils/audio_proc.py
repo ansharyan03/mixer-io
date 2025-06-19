@@ -11,8 +11,11 @@ from tempocnn.classifier import TempoClassifier
 from .tempo_features import TempoFeatures
 import pyrubberband as pyrb
 
+torch.hub.set_dir('models')
+
 class AudioWrapper:
     def __init__(self, path: str = "", data = None, sr = None, name: str = ''):
+        torch.hub.set_dir('')
         if len(path) > 0:
             data, sr = AudioWrapper.load_audio(path)
             self.name = path.split('/')[1].split('.')[0]
