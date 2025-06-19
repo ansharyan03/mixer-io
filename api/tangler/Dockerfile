@@ -2,10 +2,10 @@ FROM mambaorg/micromamba:ubuntu22.04
 WORKDIR /app
 
 WORKDIR /app/env
-ADD env .
+COPY env .
 
 WORKDIR /app/utils
-ADD utils .
+COPY utils .
 
 WORKDIR /app
 COPY *.* .
