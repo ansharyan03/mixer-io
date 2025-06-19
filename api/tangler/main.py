@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from os import getenv
 import io
 import asyncio
+import logging
 
 import httpx
 import numpy as np
@@ -20,6 +21,7 @@ from matplotlib import pyplot as plt
 
 
 app = fastapi.FastAPI()
+logger = logging.getLogger(__name__)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -35,7 +37,7 @@ class Songs(BaseModel):
     url2: str
 
 def merge_songs(song1: AudioWrapper, song2: AudioWrapper):
-    print(song1.vocals.shape, song2.vocals.shape)
+    logger.info(song1.vocals.shape, song2.vocals.shape)
     if song1.vocals.shape[1] > song2.vocals.shape[1]:
         song2.vocals = np.append(song2.vocals, np.zeros((2, song1.vocals.shape[1] - song2.vocals.shape[1])), axis=1)
         song2.instrumental = np.append(song2.instrumental, np.zeros((2, song1.instrumental.shape[1] - song2.instrumental.shape[1])), axis=1)
@@ -69,11 +71,14 @@ async def process_song(song: AudioWrapper):
     
 @app.post("/")
 async def process_songs(songs: Songs):
+
     url = getenv('INVIDIOUS_URL')
+    logger.info(f"Processing songs: {songs.url1}, {songs.url2}")
+    logger.info(f"Using Invidious instance: {url}")
     async with httpx.AsyncClient() as client:
         song1 = asyncio.create_task(read_song(songs.url1, client, url))
         song2 = asyncio.create_task(read_song(songs.url2, client, url))
-
+        logger.info(song1, song2)
         song1, song2 = await asyncio.gather(song1, song2)
         retries = 0
         while (song1 == None or song2 == None) and retries < 5:
