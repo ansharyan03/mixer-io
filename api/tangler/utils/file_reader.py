@@ -1,8 +1,8 @@
-import requests
 from pydub import AudioSegment
 import numpy as np
 import io
 import urllib.parse
+import httpx
 
 def download_range(url, start, end):
     headers = {'Range': f'bytes={start}-{end}'}
@@ -59,7 +59,7 @@ def get_adaptive_formats(data):
             data_obj = format
             return data_obj
 
-def read_tunnel(url: str, api_url: str, API_KEY: str):
+def read_tunnel(url: str, api_url: str, API_KEY: str, client: httpx.AsyncClient):
     # separate into:
     # get video ID from URL
     # form request body with API key
@@ -75,7 +75,8 @@ def read_tunnel(url: str, api_url: str, API_KEY: str):
     # form request
     headers = {"Content-Type": "application/json", "Authorization": "Bearer " + API_KEY}
     body = {"videoId": video_id}
-    response = requests.post(url=api_url, json=body, headers=headers, timeout=None)
+    
+    response = client.post(url=api_url, data=body, headers=headers, timeout=None)
     response.raise_for_status()
     # test = response.content
     # print(test)

@@ -57,7 +57,7 @@ async def read_song(song: str, client: httpx.AsyncClient, api_url: str) -> Union
     Returns AudioWrapper object
     """
     try:
-        wave, sr = read_tunnel(song, api_url, getenv('API_KEY'))
+        wave, sr = read_tunnel(song, api_url, getenv('API_KEY'), client)
         result = AudioWrapper(data=wave, sr=sr, name=song['filename'])
         return result
     except Exception as e:
@@ -75,7 +75,7 @@ async def process_songs(songs: Songs):
     url = getenv('INVIDIOUS_URL')
     logger.info(f"Processing songs: {songs.url1}, {songs.url2}")
     logger.info(f"Using Invidious instance: {url}")
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(proxy=getenv('INVIDIOUS_PROXY')) as client:
         song1 = asyncio.create_task(read_song(songs.url1, client, url))
         song2 = asyncio.create_task(read_song(songs.url2, client, url))
         logger.info(song1, song2)
