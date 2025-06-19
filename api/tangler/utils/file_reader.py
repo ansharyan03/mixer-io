@@ -1,12 +1,20 @@
+import requests
 from pydub import AudioSegment
 import numpy as np
 import io
 import urllib.parse
 import httpx
+from os import getenv
+from dotenv import load_dotenv
+
+load_dotenv('../.env')
 
 def download_range(url, start, end):
+    # if client is None:
+    client = httpx.Client(proxy=getenv('INVIDIOUS_PROXY'))
+    print(client)
     headers = {'Range': f'bytes={start}-{end}'}
-    response = requests.get(url, headers=headers)
+    response = client.get(url=url, headers=headers, follow_redirects=True, timeout=None)
     response.raise_for_status()
     return response.content
 
@@ -59,7 +67,7 @@ def get_adaptive_formats(data):
             data_obj = format
             return data_obj
 
-def read_tunnel(url: str, api_url: str, API_KEY: str, client: httpx.AsyncClient):
+def read_tunnel(url: str, api_url: str, API_KEY: str):
     # separate into:
     # get video ID from URL
     # form request body with API key
@@ -75,8 +83,7 @@ def read_tunnel(url: str, api_url: str, API_KEY: str, client: httpx.AsyncClient)
     # form request
     headers = {"Content-Type": "application/json", "Authorization": "Bearer " + API_KEY}
     body = {"videoId": video_id}
-    
-    response = client.post(url=api_url, data=body, headers=headers, timeout=None)
+    response = requests.post(url=api_url, json=body, headers=headers, timeout=None)
     response.raise_for_status()
     # test = response.content
     # print(test)
