@@ -9,10 +9,10 @@ import essentia.standard as es
 import scipy as sp
 from tempocnn.classifier import TempoClassifier
 from .tempo_features import TempoFeatures
-import pyrubberband as pyrb
+# import pyrubberband as pyrb
 import os
 
-torch.hub.set_dir('models')
+# torch.hub.set_dir('models')
 os.environ["TORCH_HOME"] = os.path.abspath("models")
 
 class AudioWrapper:

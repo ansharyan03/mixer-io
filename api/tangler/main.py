@@ -8,9 +8,8 @@ from dotenv import load_dotenv
 from os import getenv
 import io
 import asyncio
-import logging
+from logging import getLogger
 
-import httpx
 import numpy as np
 
 from utils.audio_proc import AudioWrapper
@@ -21,7 +20,7 @@ from matplotlib import pyplot as plt
 
 
 app = fastapi.FastAPI()
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -49,7 +48,6 @@ async def read_song(song: str, api_url: str) -> Union[None, AudioWrapper]:
     """
     inputs:
     - song: str - song url from YouTube
-    - client: httpx.AsyncClient - needed to be passed in to make POST requests
     - api_url: str - API for our local Cobalt instance
 
     Using the YouTube URL of a song, download it into an AudioWrapper object, ready to be manipulated/analyzed.

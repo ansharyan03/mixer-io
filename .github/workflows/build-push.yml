@@ -1,71 +1,71 @@
-name: Docker Image CI
+# name: Docker Image CI
 
-on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
-  workflow_dispatch:
+# on:
+#   push:
+#     branches: [ "master" ]
+#   pull_request:
+#     branches: [ "master" ]
+#   workflow_dispatch:
 
-jobs:
+# jobs:
 
-  build:
+#   build:
 
-    runs-on: ubuntu-latest
+#     runs-on: ubuntu-latest
 
-    steps:
-    - uses: actions/checkout@v3
-      name: Check out code
+#     steps:
+#     - uses: actions/checkout@v3
+#       name: Check out code
       
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+#     - name: Set up Docker Buildx
+#       uses: docker/setup-buildx-action@v2
     
-    - 
-      name: Install AWS CLI
-      uses: unfor19/install-aws-cli-action@v1
-      with:
-         version: 2
-         verbose: false
-         arch: amd64
-         rootdir: ""
-         workdir: ""
-    - 
-      name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4.1.0
-      with:
-        aws-region: ${{ secrets.AWS_REGION }}
-        aws-access-key-id: ${{ secrets.ACC_KE }}
-        aws-secret-access-key : ${{ secrets.SEC_KE }}
-    - name: Docker login with AWS credentials
-      run:
-        aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
-    - name: Build and push frontend image
-      run: |
-        docker buildx build \
-          --platform linux/amd64 \
-          --push \
-          --build-arg NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
-          --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }} \
-          --build-arg SPOTIFY_CLIENT=${{ secrets.SPOTIFY_CLIENT }} \
-          --build-arg SPOTIFY_SECRET=${{ secrets.SPOTIFY_SECRET }} \
-          --build-arg NEXT_PUBLIC_BACKEND_URL=http://api.tangleup.net:8000 \
-          --build-arg NEXT_PUBLIC_TANGLER_URL=http://api.tangleup.net:5000 \
-          --tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/tangle/web:latest \
-          frontend -f frontend/Dockerfile
-    - name: Build and push youtube search api image
-      run: |
-        docker buildx build \
-          --platform linux/amd64 \
-          --push \
-          --tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/tangle/youtube-search:latest \
-          api/youtube_search -f api/youtube_search/Dockerfile
-    - name: Build and push tangler api image
-      run: |
-        docker buildx build \
-          --platform linux/amd64 \
-          --push \
-          --tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/tangle/tangler:latest \
-          api/tangler -f api/tangler/Dockerfile
+#     - 
+#       name: Install AWS CLI
+#       uses: unfor19/install-aws-cli-action@v1
+#       with:
+#          version: 2
+#          verbose: false
+#          arch: amd64
+#          rootdir: ""
+#          workdir: ""
+#     - 
+#       name: Configure AWS Credentials
+#       uses: aws-actions/configure-aws-credentials@v4.1.0
+#       with:
+#         aws-region: ${{ secrets.AWS_REGION }}
+#         aws-access-key-id: ${{ secrets.ACC_KE }}
+#         aws-secret-access-key : ${{ secrets.SEC_KE }}
+#     - name: Docker login with AWS credentials
+#       run:
+#         aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+#     - name: Build and push frontend image
+#       run: |
+#         docker buildx build \
+#           --platform linux/amd64 \
+#           --push \
+#           --build-arg NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }} \
+#           --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }} \
+#           --build-arg SPOTIFY_CLIENT=${{ secrets.SPOTIFY_CLIENT }} \
+#           --build-arg SPOTIFY_SECRET=${{ secrets.SPOTIFY_SECRET }} \
+#           --build-arg NEXT_PUBLIC_BACKEND_URL=http://api.tangleup.net:8000 \
+#           --build-arg NEXT_PUBLIC_TANGLER_URL=http://api.tangleup.net:5000 \
+#           --tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/tangle/web:latest \
+#           frontend -f frontend/Dockerfile
+#     - name: Build and push youtube search api image
+#       run: |
+#         docker buildx build \
+#           --platform linux/amd64 \
+#           --push \
+#           --tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/tangle/youtube-search:latest \
+#           api/youtube_search -f api/youtube_search/Dockerfile
+#     - name: Build and push tangler api image
+#       run: |
+#         docker buildx build \
+#           --platform linux/amd64 \
+#           --push \
+#           --tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/tangle/tangler:latest \
+#           api/tangler -f api/tangler/Dockerfile
     
     
 
