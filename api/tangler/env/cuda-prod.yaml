@@ -16,7 +16,8 @@ dependencies:
 - pydantic
 - python-dotenv
 - httpx
-- pytorch-cpu
+- pytorch-gpu
+- cuda-toolkit
 - torchaudio
 
 - pip:
