@@ -37,12 +37,23 @@ class Songs(BaseModel):
 
 def merge_songs(song1: AudioWrapper, song2: AudioWrapper):
     logger.info(song1.vocals.shape, song2.vocals.shape)
-    if song1.vocals.shape[1] > song2.vocals.shape[1]:
-        song2.vocals = np.append(song2.vocals, np.zeros((2, song1.vocals.shape[1] - song2.vocals.shape[1])), axis=1)
-        song2.instrumental = np.append(song2.instrumental, np.zeros((2, song1.instrumental.shape[1] - song2.instrumental.shape[1])), axis=1)
-    else:
-        song1.vocals = np.append(song1.vocals, np.zeros((2, song2.vocals.shape[1] - song1.vocals.shape[1])), axis=1)
-        song1.instrumental = np.append(song1.instrumental, np.zeros((2, song2.instrumental.shape[1] - song1.instrumental.shape[1])), axis=1)
+
+    def _pad_to_length(arr: np.ndarray, target_len: int) -> np.ndarray:
+        """Right-pad a (channels, samples) array to target_len along axis=1."""
+        if arr.shape[1] >= target_len:
+            return arr
+        pad_width = target_len - arr.shape[1]
+        return np.pad(arr, ((0, 0), (0, pad_width)), mode="constant", constant_values=0)
+
+    
+    max_v_len = max(song1.vocals.shape[1], song2.vocals.shape[1])
+    song1.vocals = _pad_to_length(song1.vocals, max_v_len)
+    song2.vocals = _pad_to_length(song2.vocals, max_v_len)
+
+  
+    max_i_len = max(song1.instrumental.shape[1], song2.instrumental.shape[1])
+    song1.instrumental = _pad_to_length(song1.instrumental, max_i_len)
+    song2.instrumental = _pad_to_length(song2.instrumental, max_i_len)
         
 async def read_song(song: str, api_url: str) -> Union[None, AudioWrapper]:
     """
