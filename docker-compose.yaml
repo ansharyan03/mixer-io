@@ -1,19 +1,49 @@
 version: "3"
 services:
   tangler:
-    image: 914809851189.dkr.ecr.us-east-1.amazonaws.com/tangle/tangler:latest
+    build: ./api/tangler
     ports:
       - 5000:5000
     restart: unless-stopped
-  
+    environment:
+      - INVIDIOUS_URL=http://invidious:8282/youtubei/v1/player
+      - API_KEY=422bf27e1ce2bf0f # random generated 16-digit hash that is configured on the Invidious server side
+      # - INVIDIOUS_PROXY=your-url-here
   youtube-search:
-    image: 914809851189.dkr.ecr.us-east-1.amazonaws.com/tangle/youtube-search:latest
+    build: ./api/youtube_search
     ports:
       - 8000:8000
     restart: unless-stopped
+    environment:
+      - SERP_API_KEY=54f98c9c379006395a96bd4b27ddd9789feabfc90c31bc2da81dcb8e2345eaec
   
   web:
-    image: 914809851189.dkr.ecr.us-east-1.amazonaws.com/tangle/web:latest
+    build: ./frontend
     ports:
       - 80:80
     restart: unless-stopped
+    environment:
+      - NEXT_PUBLIC_TANGLE_URL=http://tangler:5000
+      - NEXT_PUBLIC_BACKEND_URL=http://youtube-search:8000
+      - NEXT_PUBLIC_SUPABASE_URL=https://your-supabase-url.supabase.co
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+      - SPOTIFY_CLIENT=your-spotify-client-id
+      - SPOTIFY_SECRET=your-spotify-client-secret
+
+  invidious:
+    build:
+      context: ./invidious-companion
+      dockerfile: Dockerfile
+    # image: quay.io/invidious/invidious-companion:latest
+    ports:
+      - 127.0.0.1:8282:8282
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    read_only: true
+    user: 10001:10001
+    # cache for youtube library
+    volumes:
+      - /var/tmp/youtubei.js:/var/tmp/youtubei.js:rw
+    security_opt:
+      - no-new-privileges:true

@@ -15,7 +15,9 @@ you can either access and run Tangle by setting up the development environment a
 
 the **most efficient** way to get set up with Tangle is to use Docker Compose. create a new folder to work out of, cd into the folder, and run `docker compose up` to run the app.
 
-if you are running the app on a computer with a CUDA-enabled GPU, change the Docker Compose YAML definition, updating the Tangler service to use the CUDA version of the container.
+if you are running the app on a computer with a CUDA-enabled GPU, change the Docker Compose YAML definition, updating the Tangler service to use the CUDA version of the container. * WIP *
+
+# 
 
 ## invidious troubleshooting
 you will need to follow the instructions on Invidious Companion's GitHub for compiling an Invidious server executable with Deno. the image provided with the Docker Compose definition should take care of this.
