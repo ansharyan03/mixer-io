@@ -1,6 +1,12 @@
+# Production dependencies
 dotenv
 fastapi[standard]
 uvicorn[standard]
 pydantic
 serpapi
 google-search-results
+
+# Development dependencies
+black
+flake8
+mypy
