@@ -1,0 +1,3 @@
+[submodule "invidious-companion"]
+	path = invidious-companion
+	url = https://github.com/iv-org/invidious-companion.git
