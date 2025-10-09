@@ -4,7 +4,6 @@ channels:
 - conda-forge
 - defaults
 dependencies:
-- essentia
 - python>=3.9,<3.10
 - numpy<2.0
 - librosa
@@ -20,11 +19,7 @@ dependencies:
 - torchaudio
 
 - pip:
-  - dora-search
-  - einops
-  - julius>=0.2.3
-  - lameenc>=1.2
-  - openunmix
+  - essentia
   - pyyaml
   - tqdm
   - pyrubberband
