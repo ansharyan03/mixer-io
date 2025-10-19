@@ -63,6 +63,7 @@ export default function SongMashForm() {
           officialSong: data.officialSong2,
           artist: data.artist2,
         });
+        console.log("Song details: ", data.officialSong1, data.artist1, "\nSong details 2: ", data.officialSong2, data.artist2 );
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err);
         setError(msg);
@@ -77,8 +78,8 @@ export default function SongMashForm() {
     try {
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
       if (!backendUrl) throw new Error("Backend URL not defined");
-
-      const backendResponse = await fetch(`${backendUrl}/search_two`, {
+      
+      const backendResponse = await fetch('/api/ytsearch', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -95,27 +96,20 @@ export default function SongMashForm() {
       if (!backendResponse.ok)
         throw new Error("Failed to fetch video links from the backend");
       const backendData: TwoSongsResponse = await backendResponse.json();
+      
 
-      const tangleUrl = process.env.NEXT_PUBLIC_TANGLE_URL;
-      if (!tangleUrl) throw new Error("Tangle URL not defined");
-
-      const tangleResponse = await fetch(`${tangleUrl}`, {
+      const tangleResponse = await fetch('/api/tangler', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           url1: backendData.link1,
           url2: backendData.link2,
         }),
-      });
-      if (!tangleResponse.ok)
-        throw new Error("Failed to post links to Tangle API");
-      if (!tangleResponse.body)
-        throw new Error("No response body from Tangle API");
-
-      const arrayBuffer = await tangleResponse.arrayBuffer();
-      const uint = new Uint8Array(arrayBuffer);
-      console.log("Mash Buffer:", uint);
-      setMashBuffer(uint);
+      });      
+      // if (!tangleResponse.ok)
+        // throw new Error("Failed to fetch mashup from Tangle API");
+      const tangleBuffer = await tangleResponse.json();
+      setMashBuffer(tangleBuffer.uint);
       setMashSuccessful(true);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);

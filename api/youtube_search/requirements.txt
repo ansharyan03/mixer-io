@@ -1,0 +1,6 @@
+dotenv
+fastapi[standard]
+uvicorn[standard]
+pydantic
+serpapi
+google-search-results
