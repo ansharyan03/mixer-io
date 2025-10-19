@@ -1,6 +1,9 @@
-import Link from "next/link";
+"use client";
 
+import React, { useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import SignInWithGoogleButton from "../../login/components/SignInWithGoogleButton";
 import {
   Card,
   CardContent,
@@ -10,94 +13,119 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+// Using react-icons for password toggle icons
+import { HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi';
 import { signup } from "@/lib/auth-actions";
 
 export function SignUpForm() {
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
-    <Card className="mx-auto font-sans font-bold bg-white max-w-lg p-8">
+    <Card className="mx-auto bg-neutral-900 mb-6 border border-orange-600 max-w-lg p-8 rounded-lg">
       <CardHeader>
-        <CardTitle className="text-3xl">Sign Up</CardTitle>
-        <CardDescription className="text-lg mt-1">
-          Sign up for unlimited mashes!
+        <CardTitle className="text-white text-3xl">Create an Account</CardTitle>
+        <CardDescription className="text-neutral-400 text-lg mt-1">
+          Get free beta access now
         </CardDescription>
       </CardHeader>
+
       <CardContent>
         <form action="">
           <div className="grid gap-6">
-            {/* First and Last name fields side by side */}
+            {/* First & Last Name */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-3">
-                <Label htmlFor="first-name" className="text-xl">
+              <div className="grid gap-2">
+                <Label htmlFor="first-name" className="text-neutral-300">
                   First name
                 </Label>
                 <Input
-                  name="first-name"
                   id="first-name"
+                  name="first-name"
                   placeholder="Max"
                   required
-                  className="text-xl p-3"
+                  className="bg-neutral-800 text-white placeholder-neutral-600 rounded-md p-3"
                 />
               </div>
-              <div className="grid gap-3">
-                <Label htmlFor="last-name" className="text-xl">
+              <div className="grid gap-2">
+                <Label htmlFor="last-name" className="text-neutral-300">
                   Last name
                 </Label>
                 <Input
-                  name="last-name"
                   id="last-name"
+                  name="last-name"
                   placeholder="Robinson"
                   required
-                  className="text-xl p-3"
+                  className="bg-neutral-800 text-white placeholder-neutral-600 rounded-md p-3"
                 />
               </div>
             </div>
-            {/* Email field */}
-            <div className="grid gap-3">
-              <Label htmlFor="email" className="text-xl">
-                Email
+
+            {/* Email */}
+            <div className="grid gap-2">
+              <Label htmlFor="email" className="text-neutral-300">
+                Email Address
               </Label>
               <Input
-                name="email"
                 id="email"
+                name="email"
                 type="email"
-                placeholder="m@example.com"
+                placeholder="example@gmail.com"
                 required
-                className="text-xl p-3"
+                className="bg-neutral-800 text-white placeholder-neutral-600 rounded-md p-3"
               />
             </div>
-            {/* Password field */}
-            <div className="grid gap-3">
-              <Label htmlFor="password" className="text-xl">
+
+            {/* Password with visibility toggle */}
+            <div className="grid gap-2">
+              <Label htmlFor="password" className="text-neutral-300">
                 Password
               </Label>
-              <Input
-                name="password"
-                id="password"
-                type="password"
-                required
-                className="text-xl p-3"
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  className="bg-neutral-800 text-white placeholder-neutral-600 rounded-md p-3 pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-3 flex items-center text-neutral-400"
+                >
+                  {showPassword ? <HiOutlineEyeOff className="w-5 h-5" /> : <HiOutlineEye className="w-5 h-5" />}
+                </button>
+              </div>
             </div>
-            {/* Submit button */}
+
+            {/* Submit Button */}
             <Button
               type="submit"
               formAction={signup}
-              className="w-full bg-pink-500 text-white py-4 rounded-md border border-pink-600 hover:bg-pink-600 transition"
+              className="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded-md transition"
             >
-              Create an account
+              Submit
             </Button>
           </div>
         </form>
-        <CardDescription className="text-md flex justify-center mt-2">
-            Look for a confirmation email        
+
+        <CardDescription className="text-neutral-500 text-center mt-4">
+          Look for a confirmation email
         </CardDescription>
-        <div className="mt-6 text-center text-l">
-          Already have an account?{" "}
-          <Link href="/login" className="underline">
+
+        <div className="mt-4 mb-1 text-center text-neutral-300">
+          Already have an account?{' '}
+          <Link href="/login" className="text-orange-600 hover:underline">
             Sign in
           </Link>
         </div>
-      </CardContent>
+        <div className="flex mb-4 items-center">
+        <hr className="flex-grow border-t border-neutral-700" />
+  <span className="px-3 text-neutral-500">or</span>
+  <hr className="flex-grow border-t border-neutral-700" />
+        </div>
+        <SignInWithGoogleButton/>
+              </CardContent>
     </Card>
   );
 }

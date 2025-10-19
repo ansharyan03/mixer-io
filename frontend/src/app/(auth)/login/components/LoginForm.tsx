@@ -1,5 +1,9 @@
+"use client";
+
+import React, { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import SignInWithGoogleButton from "./SignInWithGoogleButton";
 import {
   Card,
   CardContent,
@@ -9,62 +13,89 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi';
 import { login } from "@/lib/auth-actions";
-import SignInWithGoogleButton from "./SignInWithGoogleButton";
 
 export function LoginForm() {
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
-    <Card className="mx-auto bg-white font-bold font-sans max-w-lg p-8">
+    <Card className="mx-auto bg-neutral-900 mb-6 border border-orange-600 max-w-lg p-8 rounded-lg">
       <CardHeader>
-        <CardTitle className="text-3xl">Login</CardTitle>
-        <CardDescription className="text-lg">
-          Enter your email below to login to your account
+        <CardTitle className="text-white text-3xl">Login</CardTitle>
+        <CardDescription className="text-neutral-400 text-lg mt-1">
+          
         </CardDescription>
       </CardHeader>
+
       <CardContent>
         <form action="">
           <div className="grid gap-6">
-            <div className="grid gap-3">
-              <Label htmlFor="email" className="text-xl">
-                Email
+            {/* Email */}
+            <div className="grid gap-2">
+              <Label htmlFor="email" className="text-neutral-300">
+                Email Address
               </Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
-                placeholder="m@example.com"
+                placeholder="example@gmail.com"
                 required
-                className="text-xl p-3"
+                className="bg-neutral-800 text-white placeholder-neutral-600 rounded-md p-3"
               />
             </div>
-            <div className="grid gap-3">
-              <Label htmlFor="password" className="text-xl">
+
+            {/* Password with visibility toggle */}
+            <div className="grid gap-2">
+              <Label htmlFor="password" className="text-neutral-300">
                 Password
               </Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                required
-                className="text-xl p-3"
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  className="bg-neutral-800 text-white placeholder-neutral-600 rounded-md p-3 pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-3 flex items-center text-neutral-400"
+                >
+                  {showPassword ? <HiOutlineEyeOff className="w-5 h-5" /> : <HiOutlineEye className="w-5 h-5" />}
+                </button>
+              </div>
             </div>
+
+            {/* Login Button */}
             <Button
               type="submit"
               formAction={login}
-              className="w-full bg-pink-500 text-white py-4 rounded-md hover:bg-pink-600 transition"
+              className="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 rounded-md transition"
             >
               Login
             </Button>
-            <SignInWithGoogleButton />
           </div>
         </form>
-        <div className="mt-6 text-center text-l">
-          Don&apos;t have an account?{" "}
-          <Link href="/signup" className="underline">
+        <CardDescription className="text-neutral-300 text-center mt-6">
+          Don't have an account?{' '}
+          <Link href="/signup" className="text-orange-600 hover:underline">
             Sign up
           </Link>
+        </CardDescription>
+        {/* Divider with OR */}
+        <div className="flex items-center my-2">
+          <hr className="flex-grow border-t border-neutral-700" />
+          <span className="px-3 text-neutral-500">or</span>
+          <hr className="flex-grow border-t border-neutral-700" />
         </div>
+
+        {/* Social Login */}
+        <SignInWithGoogleButton />
+
+       
       </CardContent>
     </Card>
   );

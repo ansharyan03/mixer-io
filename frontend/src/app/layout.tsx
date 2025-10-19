@@ -34,17 +34,6 @@ export default function RootLayout({
     };
   }, [supabase]);
 
-  let backgroundClass = "";
-  if (path === "/login") {
-    backgroundClass =
-      "bg-gradient-to-r from-pink-400 via-orange-400 to-orange-500 backdrop-blur-md";
-  } else if (user) {
-    backgroundClass =
-      "bg-gradient-to-r from-pink-400 via-orange-400 to-orange-500";
-  } else {
-    backgroundClass =
-      "bg-gradient-to-r from-pink-400 via-orange-400 to-orange-500";
-  }
 
   return (
     <html lang="en">
@@ -57,12 +46,12 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Anton&family=Liter&display=swap"
           rel="stylesheet"
         />
       </head>
       <body
-        className={`${backgroundClass} transition-colors duration-300 min-h-screen`}
+        className={"bg-neutral-900"}
       >
         {children}
       </body>

@@ -21,26 +21,26 @@ const LoginButton = () => {
     fetchUser();
   }, [supabase]);
 
+  // Shared classes: smaller on mobile, original size from sm+
+  const btnClasses =
+    "px-4 py-2 sm:px-8 sm:py-6 bg-gray-100 text-neutral-900 text-sm sm:text-xl font-bold rounded-xl border border-transparent hover:border-orange-500 hover:bg-white hover:text-orange-600 transition-all duration-200";
+
   if (user) {
     return (
-      <Button
-        className="px-8 py-3 bg-transparent text-white text-xl font-semibold rounded-full border border-2 border-white hover:bg-white hover:text-pink-600 transition-colors duration-200 shadow-lg"
-        onClick={() => {
-          signout();
-          setUser(null);
-        }}
-      >
+      <Button className={btnClasses} onClick={() => { signout(); setUser(null); }}>
         Log out
       </Button>
     );
   }
 
   return (
-    <Button
-      className="px-8 py-3 bg-transparent text-white text-xl font-semibold rounded-full border border-2 border-white hover:bg-white hover:text-pink-600 transition-colors duration-200 shadow-lg"
-      onClick={() => router.push("/login")}
-    >
-      Login
+    <Button asChild className={`group ${btnClasses}`}>
+      <button onClick={() => router.push("/login")}>
+       Log in
+        <span className="transform transition-transform duration-300 font-bold group-hover:translate-x-1">
+          →
+        </span>
+      </button>
     </Button>
   );
 };
